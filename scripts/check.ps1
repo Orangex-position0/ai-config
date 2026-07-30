@@ -76,6 +76,26 @@ function Test-FilePair($SourceRelative, $Destination) {
     }
 }
 
+function Test-SkillReadmeLinks() {
+    $Readme = Join-Path $Root "skills/README.md"
+    if (-not (Test-Path $Readme)) {
+        return
+    }
+
+    $Content = Get-Content -Raw -Path $Readme
+    $Matches = [regex]::Matches($Content, "\]\(\./([^/)]+)/SKILL\.md\)")
+    $SkillNames = $Matches | ForEach-Object { $_.Groups[1].Value } | Sort-Object -Unique
+
+    foreach ($SkillName in $SkillNames) {
+        $SkillPath = Join-Path $Root "skills/$SkillName/SKILL.md"
+        if (-not (Test-Path $SkillPath)) {
+            $script:Failures += "missing skill: skills/$SkillName/SKILL.md referenced by skills/README.md"
+        }
+    }
+}
+
+Test-SkillReadmeLinks
+
 Test-PathPair "rules" $ClaudeHome
 Test-PathPair "skills" $ClaudeHome
 Test-AgentPair $ClaudeHome

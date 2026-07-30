@@ -76,6 +76,21 @@ check_file() {
   fi
 }
 
+check_skill_readme_links() {
+  local readme="$root/skills/README.md"
+
+  [[ -f "$readme" ]] || return 0
+
+  while IFS= read -r skill; do
+    [[ -n "$skill" ]] || continue
+    if [[ ! -f "$root/skills/$skill/SKILL.md" ]]; then
+      failures+=("missing skill: skills/$skill/SKILL.md referenced by skills/README.md")
+    fi
+  done < <(grep -oE '\]\(\./[^/)]+/SKILL\.md\)' "$readme" | sed -E 's#.*\./([^/]+)/SKILL\.md\)#\1#' | sort -u || true)
+}
+
+check_skill_readme_links
+
 check_pair "rules" "$claude_home"
 check_pair "skills" "$claude_home"
 check_agents "$claude_home"
