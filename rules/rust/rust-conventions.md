@@ -89,7 +89,13 @@ Avoid wildcard `_` for business-critical enums unless the ignored cases are inte
 
 ## 6. Performance Primitives
 
+- Profile or benchmark before optimizing non-obvious performance paths; do not guess bottlenecks.
 - Avoid repeated heap allocation in loops or hot paths; reuse buffers with `clear()` when the capacity can be kept.
+- Borrow `&str` / `&[T]` for read-only access; allocate `String` / `Vec<T>` only when ownership, mutation, storage, or dynamic construction is required.
+- Check `clone()` cost before using it in hot paths. Cloning `Arc`, `Bytes`, or another handle is cheap; cloning owned heap data may copy the full payload.
+- Use `bytes::Bytes` for forwarding byte payloads across components; deserialize directly into typed structs when business logic needs structured data.
+- Use `Arc` for config, pools, and read-only shared state; avoid wrapping request-scoped large payloads in `Arc` unless their extended lifetime is intentional.
+- Give caches explicit bounds such as max entries, max memory, TTL, or an eviction policy.
 - Use `HashMap::entry` instead of `contains_key()` followed by `get_mut()` or `insert()`.
 - Use Rayon parallel iterators for CPU-bound, independent data processing when sequential iteration is the bottleneck.
 - Use `Vec::swap_remove()` when deleting by index and element order does not matter.

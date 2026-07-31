@@ -30,6 +30,8 @@ When reviewing Tokio task code:
 4. Check whether task creation is bounded by a queue, semaphore, pool, or fixed configuration.
 5. Check shutdown: cancel first, wait second, timeout third, abort last.
 6. Check whether blocking or CPU-heavy work uses `spawn_blocking`.
+7. Check whether `async move` captures large `Vec`, JSON, file contents, or request payloads longer than needed.
+8. Check queue and cache bounds against payload size, not only item count.
 
 ## Fire-and-forget Boundary
 
@@ -98,6 +100,21 @@ async fn handler(
 ```
 
 Use a durable queue or task table when jobs must survive process crashes.
+
+## Async Memory Pressure
+
+An `async move` block owns every captured value until the Future completes or is dropped. Large request payloads, decoded JSON, reports, or file buffers should not be moved into long-lived tasks unless the task truly needs them.
+
+Prefer the smallest captured data:
+
+```rust
+let user_id = request.user_id;
+tokio::spawn(async move {
+    refresh_user_cache(user_id).await;
+});
+```
+
+If a large temporary is needed before spawning or awaiting, end its scope or call `drop(large_value)` before the next `.await`.
 
 ## CancellationToken Worker Pattern
 
@@ -182,6 +199,8 @@ Use this checklist before finishing a Tokio task lifecycle change:
 - Long-lived tasks receive a cancellation signal.
 - Shutdown waits for tasks that need cleanup.
 - Background queues are bounded.
+- Bounded queues are sized with payload memory in mind.
+- Long-lived tasks do not capture request-scoped large payloads unnecessarily.
 - Task result, error, and panic are observed where they matter.
 - `abort()` appears only as timeout fallback.
 - Blocking or CPU-heavy work uses `spawn_blocking`.
