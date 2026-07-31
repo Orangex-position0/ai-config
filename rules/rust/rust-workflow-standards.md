@@ -47,6 +47,10 @@ paths:
 - Projects that declare MSRV should verify it before release.
 - Application crates must commit `Cargo.lock`.
 - Library crates should not commit `Cargo.lock` unless the repository is also an application workspace.
+- Single-crate projects should stay single-crate; do not introduce a workspace only because the project may grow later.
+- Use a workspace when multiple crates are developed, tested, and versioned together in one repository.
+- Use a workspace when a binary crate and reusable library crate need shared CI, toolchain, dependency policy, or release coordination.
+- Split into workspace members only across real crate boundaries such as public library, CLI, server, proc macro, or integration-test support crates.
 - Workspace member crates must use `workspace = true` for dependencies already declared in `[workspace.dependencies]`.
 - Keep linker, cache, and profiling flags in `.cargo/config.toml` or CI environment configuration; do not require global developer machine settings.
 

@@ -17,6 +17,21 @@ Follow [Rust Workflow Standards](../../rules/rust/rust-workflow-standards.md) as
 6. Use `workspace = true` for shared workspace dependencies.
 7. Verify with the smallest command set that covers the touched surface.
 
+## Workspace Decision
+
+Default to a single crate. Use a workspace only when the repository already has multiple crates that must share CI, toolchain, dependency policy, or release coordination.
+
+Good workspace boundaries:
+
+- binary plus reusable library
+- CLI plus server
+- proc macro plus runtime crate
+- integration-test support crate
+
+Avoid vague crates such as `utils`, `common`, or `helpers` unless they provide real reusable APIs with a clear owner.
+
+Do not create a workspace for speculative future split. Add it when the second real crate exists or is part of the requested change.
+
 ## Command Policy
 
 Default commands:
@@ -167,6 +182,20 @@ tokio = { workspace = true }
 serde = { workspace = true }
 ```
 
+Share package metadata when all member crates follow the same value:
+
+```toml
+[workspace.package]
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[package]
+version.workspace = true
+edition.workspace = true
+license.workspace = true
+```
+
 ## CI Pipeline
 
 Use CI as the authoritative gate. A minimal GitHub Actions job should run:
@@ -194,6 +223,14 @@ jobs:
 ```
 
 Prefer `cargo nextest run --locked` once `cargo-nextest` is installed in CI. Public libraries or crates with multiple feature flags should add a feature matrix check with `cargo hack`. Public or production projects should add dependency vulnerability checks, and projects with license policy requirements should add `cargo deny check`.
+
+For workspace changes that affect shared crates, run workspace-level checks:
+
+```bash
+cargo check --workspace
+cargo test --workspace
+cargo build --workspace
+```
 
 ## Cargo.lock Policy
 
