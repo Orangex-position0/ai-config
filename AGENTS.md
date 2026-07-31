@@ -76,6 +76,7 @@ Use `CLAUDE_HOME` or `CODEX_HOME` to override install targets.
 
 Load these files only when relevant to the task:
 
+- AI Coding resource management: `rules/ai-coding-resource-management.md`
 - Architecture: `rules/ddd-architecture.md`
 - API docs: `rules/api-documentation.md`
 - ADR: `rules/adr-writing.md`
@@ -86,6 +87,7 @@ Load these files only when relevant to the task:
 
 ## Skills And Commands
 
+- Keep startup context as an index: route reusable task workflows to `skills/`, explicit high-frequency entries to `commands/`, delegated roles to `agents/`, and deterministic checks to hooks or `scripts/`.
 - Use skills under `skills/` for matching tasks instead of improvising a new workflow.
 - For React-specific work, prefer `/react-review`, `/react-build`, and `/react-test`.
 - For Go-specific work, prefer `/go-review`, `/go-build`, and `/go-test`.

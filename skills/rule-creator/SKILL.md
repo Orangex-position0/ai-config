@@ -3,8 +3,9 @@ name: rule-creator
 description: >
   编写和审查 ~/.claude/rules/ 下的规范文档（Rules 编写元规范）。
   当用户要求"写 rule"、"新建规范文档"、"修改 rules/*.md"、"检查 rule 是否符合规范"、
-  "判断内容该用 rule 还是 Skill"时触发。提供命名、Frontmatter（paths）、章节结构
-  （WHY/WHAT/HOW）、格式、元数据，以及 Rule 与 Skill 的内容分工判断。
+  "判断内容该用 rule、Skill、Command、Agent 还是 Hook / script"时触发。提供命名、
+  Frontmatter（paths）、章节结构（WHY/WHAT/HOW）、格式、元数据，以及 AI Coding
+  资源分层判断。
 ---
 
 # Rules 编写规范 (Rules Authoring Spec)
@@ -172,9 +173,9 @@ paths:
 | `rule-creator`（本 Skill） | `~/.claude/skills/rule-creator/SKILL.md` | Rules 编写元规范，按语义触发 |
 | `rules/domain-skill-authoring.md` | rules 目录 | 领域 Skill 编写规范 |
 
-## 8. Rule 与 Skill 的内容分工
+## 8. Rule 与其他资源的内容分工
 
-创建或审查 Rule / Skill 时，先遵循 [ECC Authoring](../../rules/ecc-authoring.md)：Rule 写原则底线，Skill 写任务落地。
+创建或审查 Rule / Skill 时，先遵循 [AI Coding 资源管理体系](../../rules/ai-coding-resource-management.md)：Rule 写原则底线，Skill 写任务落地。
 
 Rule 和 Skill 承载不同形态的知识，混写会两头不讨好。判断标准是**内容形态**，不是主题：
 
@@ -205,6 +206,8 @@ Rule 和 Skill 承载不同形态的知识，混写会两头不讨好。判断�
 如此 rule 保持简练、随路径自动加载；Skill 按语义按需展开，两者职责不重叠。
 
 > 领域 Skill 的完整编写规范见 [domain-skill-authoring.md](../../rules/domain-skill-authoring.md)。
+
+当内容更像用户显式入口、委派角色或确定性自动化时，不要硬塞进 Rule：高频入口放 Command，独立职责放 Agent，自动检查或阻断放 Hook / script。
 
 ## 9. 检查清单
 

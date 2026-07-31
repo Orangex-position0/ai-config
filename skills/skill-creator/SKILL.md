@@ -24,9 +24,9 @@ equipped with procedural knowledge that no model can fully possess.
 
 ## Core Principles
 
-### ECC Authoring Boundary
+### AI Coding Resource Boundary
 
-Follow [ECC Authoring](../../rules/ecc-authoring.md) when creating or updating Skills: Skills turn Rules into concrete workflows. If content is a cross-context principle or hard constraint, extract it into a Rule and reference it from the Skill. If content is a one-off note or default model knowledge, do not add it.
+Follow [AI Coding Resource Management](../../rules/ai-coding-resource-management.md) when creating or updating Skills: Skills turn Rules into concrete workflows. If content is a cross-context principle or hard constraint, extract it into a Rule and reference it from the Skill. If content is a user-invoked entry point, role delegation, or deterministic automation, use a Command, Agent, or Hook / script instead. If content is a one-off note or default model knowledge, do not add it.
 
 ### Concise is Key
 
