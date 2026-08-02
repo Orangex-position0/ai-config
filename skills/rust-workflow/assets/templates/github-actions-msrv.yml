@@ -1,0 +1,16 @@
+name: MSRV
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  msrv:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: Swatinem/rust-cache@v2
+      - run: cargo install cargo-msrv --locked
+      - run: cargo msrv verify

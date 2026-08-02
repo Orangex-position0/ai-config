@@ -87,6 +87,7 @@ add_copy_file "CLAUDE.md" "$claude_home/CLAUDE.md"
 add_copy_dir "rules" "$codex_home"
 add_copy_dir "skills" "$codex_home"
 add_agent_copy "$codex_home"
+add_copy_dir "commands" "$codex_home"
 add_copy_dir "templates" "$codex_home"
 add_copy_file "AGENTS.md" "$codex_home/AGENTS.md"
 

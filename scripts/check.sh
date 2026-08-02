@@ -101,6 +101,7 @@ check_file "CLAUDE.md" "$claude_home/CLAUDE.md"
 check_pair "rules" "$codex_home"
 check_pair "skills" "$codex_home"
 check_agents "$codex_home"
+check_pair "commands" "$codex_home"
 check_pair "templates" "$codex_home"
 check_file "AGENTS.md" "$codex_home/AGENTS.md"
 

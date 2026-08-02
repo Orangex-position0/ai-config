@@ -26,9 +26,8 @@ paths:
 - Existing managed hook frameworks may remain; do not mix hook frameworks in the same project.
 - Hand-written `core.hooksPath` scripts are allowed only for tiny personal projects; migrate to `prek` once hooks are shared or reused.
 - Commit hook configuration files; do not rely on untracked `.git/hooks` scripts.
-- Pre-commit must catch formatting, Clippy, and TODO issues by default.
-- Pre-push must run tests by default.
-- Move Clippy out of pre-commit only when the project documents an unacceptable local runtime cost.
+- Pre-commit must catch formatting, `cargo check`, and TODO issues by default.
+- Pre-push must run Clippy and tests by default.
 - Use `--no-verify` only for emergency commits, and run the skipped commands before handoff or push.
 - Do not treat hooks as a security boundary; CI remains authoritative.
 
@@ -42,6 +41,8 @@ paths:
 
 ## Project Configuration
 
+- When initializing or retrofitting Rust project workflow files, prefer `/rust-init`; it should apply the detailed setup in [rust-workflow](../../skills/rust-workflow/SKILL.md).
+- Preserve existing project conventions; never remove existing configuration, overwrite workflows, downgrade toolchains, introduce nightly features, or migrate editions automatically.
 - New Rust projects must pin the Rust toolchain and include `rustfmt` and `clippy`.
 - Publishable crates must declare MSRV with `package.rust-version`.
 - Projects that declare MSRV should verify it before release.

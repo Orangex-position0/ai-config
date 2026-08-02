@@ -1,0 +1,5 @@
+[profile.release]
+incremental = true
+lto = "off"
+debug = 1
+codegen-units = 16

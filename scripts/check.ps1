@@ -106,6 +106,7 @@ Test-FilePair "CLAUDE.md" (Join-Path $ClaudeHome "CLAUDE.md")
 Test-PathPair "rules" $CodexHome
 Test-PathPair "skills" $CodexHome
 Test-AgentPair $CodexHome
+Test-PathPair "commands" $CodexHome
 Test-PathPair "templates" $CodexHome
 Test-FilePair "AGENTS.md" (Join-Path $CodexHome "AGENTS.md")
 

@@ -1,0 +1,4 @@
+[lints.clippy]
+all = "warn"
+todo = "deny"
+unimplemented = "deny"

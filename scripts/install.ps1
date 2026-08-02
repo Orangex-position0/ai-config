@@ -92,6 +92,7 @@ Add-CopyFileOperation "CLAUDE.md" (Join-Path $ClaudeHome "CLAUDE.md")
 Add-CopyDirOperation "rules" $CodexHome
 Add-CopyDirOperation "skills" $CodexHome
 Add-AgentOperation $CodexHome
+Add-CopyDirOperation "commands" $CodexHome
 Add-CopyDirOperation "templates" $CodexHome
 Add-CopyFileOperation "AGENTS.md" (Join-Path $CodexHome "AGENTS.md")
 
