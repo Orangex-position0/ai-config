@@ -15,6 +15,14 @@ Default to auto-detection from repository files. Ask the user only when a choice
 
 When the project level is not explicit, infer it and state the plan before editing. Example: "I infer this is an application/service; I will add rustfmt, managed hooks, a pinned toolchain, and base CI, and skip audit/MSRV/cross-build unless the repo shows they are needed."
 
+Use guided selection only when the user asks to choose manually or repository signals conflict. In guided mode, present the inferred default plus these levels:
+
+| Level | Use when | Default additions |
+| --- | --- | --- |
+| `minimal` | Demo, learning project, small local tool, or short-lived crate | `rustfmt`, existing test command, and only already-present workflow files |
+| `application/service` | Maintained binary, CLI, internal service, or team-owned application | pinned toolchain, `rustfmt`, Clippy lints, managed hooks, and base CI |
+| `production/public` | Public crate, production service, published artifact, or project with explicit compatibility/security expectations | application/service baseline plus quality CI; add MSRV, audit, feature matrix, cross-build, cache, or linker config only when the repo already shows that need |
+
 ## Initialization Flow
 
 For initialization or retrofit, inspect before editing:
