@@ -89,6 +89,7 @@ Load these files only when relevant to the task:
 
 - Keep startup context as an index: route reusable task workflows to `skills/`, explicit high-frequency entries to `commands/`, delegated roles to `agents/`, and deterministic checks to hooks or `scripts/`.
 - Use skills under `skills/` for matching tasks instead of improvising a new workflow.
+- For GitHub issue, PR, CI, release, or open-source maintainer work, prefer `github-ops` for live platform state and `check` for code/release review.
 - For React-specific work, prefer `/react-review`, `/react-build`, and `/react-test`.
 - For Go-specific work, prefer `/go-review`, `/go-build`, and `/go-test`.
 - When delegating to subagents, include the relevant project rules and skill instructions in the subagent prompt.

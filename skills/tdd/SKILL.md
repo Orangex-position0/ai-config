@@ -34,3 +34,12 @@ Ask: "What's the public interface, and which seams should we test?"
 - **Red before green.** Write the failing test first, then only enough code to pass it. Don't anticipate future tests or add speculative features.
 - **One slice at a time.** One seam, one test, one minimal implementation per cycle.
 - **Refactoring is not part of the loop.** It belongs to the review stage (see the `code-review` skill), not the red → green implementation cycle.
+
+## PR evidence
+
+When a TDD cycle is packaged as a pull request, preserve the evidence where reviewers will see it:
+
+- Name the failing test or compile-time RED signal.
+- Name the GREEN command that passed after the fix.
+- If commits will be squashed, copy the RED/GREEN/refactor summary into the PR body, squash commit body, or a project evidence note.
+- Do not claim tests passed unless the command ran in the current session.
