@@ -1,0 +1,7 @@
+interface:
+  display_name: "Rust Workflow"
+  short_description: "Initialize and maintain Rust project tooling."
+  default_prompt: "Use $rust-workflow to initialize or retrofit this Rust project's workflow."
+
+policy:
+  allow_implicit_invocation: true

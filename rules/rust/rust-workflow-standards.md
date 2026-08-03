@@ -41,7 +41,7 @@ paths:
 
 ## Project Configuration
 
-- When initializing or retrofitting Rust project workflow files, prefer `/rust-init`; it should apply the detailed setup in [rust-workflow](../../skills/rust-workflow/SKILL.md).
+- When initializing or retrofitting Rust project workflow files, use [rust-workflow](../../skills/rust-workflow/SKILL.md). Claude Code may enter through `/rust-init`; Codex should invoke `$rust-workflow` directly.
 - Preserve existing project conventions; never remove existing configuration, overwrite workflows, downgrade toolchains, introduce nightly features, or migrate editions automatically.
 - New Rust projects must pin the Rust toolchain and include `rustfmt` and `clippy`.
 - Publishable crates must declare MSRV with `package.rust-version`.
