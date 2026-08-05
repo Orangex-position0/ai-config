@@ -1,0 +1,4 @@
+interface:
+  display_name: "Rust Typestate Audit"
+  short_description: "Audit Rust typestate refactor candidates"
+  default_prompt: "Use $rust-typestate-audit to find Rust code that should become typestate and propose the smallest safe refactor."
