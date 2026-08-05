@@ -16,6 +16,11 @@
 | [adr](./adr/SKILL.md) | 架构决策记录（ADR）的编写与审计 |
 | [write](./write/SKILL.md) | 中英文文案润色、去 AI 味 |
 | [tech-blog-coach](./tech-blog-coach/SKILL.md) | 基于费曼学习法的技术博客教练 |
+| [rust-patterns](./rust-patterns/SKILL.md) | Rust 惯用模式、所有权、错误处理、并发与类型建模 |
+| [rust-testing](./rust-testing/SkILL.md) | Rust 单元测试、集成测试、异步测试与 TDD |
+| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | Tokio 任务生命周期、取消、队列与 shutdown 审查 |
+| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | Rust typestate 候选识别、取舍与最小重构 |
+| [rust-workflow](./rust-workflow/SKILL.md) | Rust 项目初始化、工具链、CI、hooks 与 Cargo 工作流 |
 | [skill-creator](./skill-creator/SKILL.md) | 创建与维护 Skill 的元指南 |
 
 ---
@@ -52,7 +57,17 @@
 | [write](./write/SKILL.md) | 帮我写、改稿、润色、去 AI 味 | 自然流畅的中英文文案 |
 | [tech-blog-coach](./tech-blog-coach/SKILL.md) | 技术博客写作、笔记转文章 | 五段式结构文章、写作策略 |
 
-### 5. 元工具（Meta Tools）
+### 5. Rust
+
+| Skill | 触发场景 | 输出物 |
+|-------|---------|--------|
+| [rust-patterns](./rust-patterns/SKILL.md) | 编写、审查、重构 Rust 代码或设计 crate 结构 | Rust 惯用模式与类型建模建议 |
+| [rust-testing](./rust-testing/SkILL.md) | 编写 Rust 测试、补覆盖率、异步测试、TDD | Rust 测试方案与测试代码 |
+| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | 审查 `tokio::spawn`、任务泄漏、取消、shutdown、bounded queue | Tokio 生命周期审查与重构建议 |
+| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | 识别可改造为 typestate 的 Rust API、builder 或资源生命周期 | typestate 候选表、取舍建议、最小重构 |
+| [rust-workflow](./rust-workflow/SKILL.md) | 初始化或改造 Rust 工具链、CI、hooks、Cargo 配置 | Rust 工作流配置与验证命令 |
+
+### 6. 元工具（Meta Tools）
 
 | Skill | 触发场景 | 输出物 |
 |-------|---------|--------|
