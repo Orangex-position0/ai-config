@@ -63,6 +63,7 @@ Copy templates only when the target file is missing. Merge manually when the tar
 | `assets/templates/github-actions-ci.yml` | New GitHub Actions CI workflow is needed |
 | `assets/templates/github-actions-quality.yml` | Public library or production project needs extra dependency, security, or feature checks |
 | `assets/templates/github-actions-msrv.yml` | Project declares MSRV and needs CI verification |
+| `assets/templates/deny.toml` | Project needs dependency, license, advisory, or source policy enforced by `cargo-deny` |
 | `assets/templates/justfile` | Existing workflow already uses `just`, or humans/CI reuse the commands |
 | `assets/templates/cargo-workspace-root.toml` | New multi-crate Rust 2024 workspace needs a root manifest |
 | `assets/templates/cargo-lints-workspace-root.toml` | Real workspace root needs shared Clippy lints |

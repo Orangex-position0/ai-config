@@ -1,0 +1,47 @@
+[advisories]
+unmaintained = "workspace"
+yanked = "warn"
+ignore = [
+    # Temporary advisory exceptions must include owner and review date.
+    # {
+    #     id = "RUSTSEC-0000-0000",
+    #     reason = "Not affected because the vulnerable code path is unused; owner: xxx; review: 2026-12-01",
+    # },
+]
+
+[licenses]
+# Default permissive license allowlist; tighten per project policy.
+allow = [
+    "Apache-2.0",
+    "Apache-2.0 WITH LLVM-exception",
+    "BSD-2-Clause",
+    "BSD-3-Clause",
+    "CC0-1.0",
+    "ISC",
+    "MIT",
+    "Unicode-3.0",
+    "Zlib",
+]
+confidence-threshold = 0.8
+unused-allowed-license = "warn"
+
+[bans]
+multiple-versions = "warn"
+wildcards = "deny"
+allow-wildcard-paths = true
+highlight = "simplest-path"
+
+[bans.workspace-dependencies]
+duplicates = "deny"
+include-path-dependencies = true
+unused = "warn"
+
+[sources]
+unknown-registry = "deny"
+unknown-git = "deny"
+allow-registry = [
+    "https://github.com/rust-lang/crates.io-index",
+]
+# Add approved Git dependencies one repository at a time.
+allow-git = []
+required-git-spec = "rev"

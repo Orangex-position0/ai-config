@@ -42,6 +42,10 @@ description: Turn a user's technical draft, notes, bug write-up, learning record
 - 优先使用 Hugo Page Bundle 管理文章资源。
 - Leaf Bundle 用于单篇文章：一个目录包含 `index.md` 和图片、附件等资源。
 - Branch Bundle 用于列表页或内容集合，通常使用 `_index.md`，不要把单篇文章图片放到 Branch Bundle 下。
+- 需要管理文章或文件之间的链接时，使用 Hugo 内置引用生成链接，避免手写路径：
+  - 绝对路径：`[标题]({{< ref "posts/xxx.md" >}})`。
+  - 相对路径：`[标题]({{< relref "posts/xxx.md" >}})`。
+  - 引用路径基于 `content/` 目录；让 Hugo 在构建时解析路径并校验死链。
 - 推荐结构：
 
 ```text
@@ -58,6 +62,8 @@ content/posts/<category>/<slug>/
 - 检查代码块语言标记是否正确。
 - 明确标注未经运行验证的代码，不编造执行结果。
 - 优先保留作者自己的经历、判断和踩坑细节。
+- 识别正文中适合配图的位置，并用表格列出：`位置`、`可以配什么图`、`生成图片 prompt`。
+- 配图建议优先服务理解：架构图、流程图、对比图、时序图、界面截图、调试现场图；不要为了装饰硬塞图片。
 
 ## 写作风格
 
@@ -72,4 +78,5 @@ content/posts/<category>/<slug>/
 - 如果用户只要求改文章内容，直接输出完整 Markdown。
 - 如果用户要求写入博客仓库，创建或更新对应 Hugo Markdown 文件。
 - 如果分类、标签、slug 不明确，根据主题给出保守默认值。
+- 输出文章后附上“配图建议”表格，列出位置、可以配什么图、生成图片 prompt。
 - 完成后说明文章路径、front matter 关键字段，以及未验证的代码或待补资料。

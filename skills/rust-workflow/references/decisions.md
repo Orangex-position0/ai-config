@@ -141,7 +141,7 @@ Order CI layers as fmt, Clippy with warnings denied, tests, feature checks, vuln
 
 Prefer `cargo nextest run --locked` only when the project already uses `cargo-nextest`. Add MSRV checks only for projects that declare MSRV. For public libraries or production projects, copy `../assets/templates/github-actions-quality.yml` when extra dependency, security, or feature checks are needed.
 
-Use `cargo hack` for crates with meaningful feature combinations. Use `cargo audit` for RustSec vulnerability checks. Use `cargo deny check` only when the project has dependency or license policy. Keep `cargo udeps` out of default CI because it requires nightly. Keep `cargo crap` as an explicit analysis task, not a default gate.
+Use `cargo hack` for crates with meaningful feature combinations. Use `cargo audit` for RustSec vulnerability checks. Use `cargo deny check` only when the project has dependency or license policy. When that policy is needed and no config exists, apply `../assets/templates/deny.toml`; the quality CI template already runs `cargo deny check` when `deny.toml` is present. Keep `cargo udeps` out of default CI because it requires nightly. Keep `cargo crap` as an explicit analysis task, not a default gate.
 
 For workspace changes that affect shared crates, run workspace-level checks:
 
