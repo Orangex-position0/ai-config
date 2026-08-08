@@ -12,6 +12,7 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 核心约束：
 
 - 模板内容（ADR / PRD / BDD 字段、CHANGELOG 格式、commit 规范）一律从 rules 读取，禁止在本 skill 内复制。
+- GitHub issue / PR 模板来自本仓库 `templates/github/`，只在目标项目会开源到 GitHub 时物化。
 - rules 未覆盖的增量知识（如 React 的 lefthook 命令、Rust 的 prek 框架选择）才写进 `references/<stack>.md`。
 - 锚点统一用「文件路径 + 章节标题」，不用行号——rules 迭代频繁，行号必然腐化。
 
@@ -56,7 +57,26 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 
 → 验证：四个文件存在，字段与 rules 完全一致（未自行增删）。
 
-### Step 4 · 生成 Git hooks 配置
+### Step 4 · 判断是否物化 GitHub 开源模板
+
+仅当目标项目会作为开源项目发布到 GitHub 时，才生成 GitHub issue / PR 模板。判断顺序：
+
+1. 用户明确说「开源」「GitHub」「public repo」「open source」→ 生成。
+2. 目标项目已存在 `.github/`、GitHub remote，或 README / package metadata 明确指向公开 GitHub 仓库 → 生成前向用户确认一次。
+3. 公司内部、私有、未确定托管平台、或只使用 GitHub Enterprise 做内部协作 → 不生成，并在收尾说明中标记为跳过。
+
+生成时从本配置仓库复制：
+
+- `templates/github/pull_request_template.md` → `<project-root>/.github/pull_request_template.md`
+- `templates/github/ISSUE_TEMPLATE/bug_report.md` → `<project-root>/.github/ISSUE_TEMPLATE/bug_report.md`
+- `templates/github/ISSUE_TEMPLATE/feature_request.md` → `<project-root>/.github/ISSUE_TEMPLATE/feature_request.md`
+- `templates/github/ISSUE_TEMPLATE/config.yml` → `<project-root>/.github/ISSUE_TEMPLATE/config.yml`
+
+若目标文件已存在，跳过并提示，不覆盖。
+
+→ 验证：开源 GitHub 项目存在 `.github/` 模板；非开源或未确认项目明确跳过。
+
+### Step 5 · 生成 Git hooks 配置
 
 1. Read `references/<stack>.md`，确定该栈的 hooks 框架与命令：
    - **Java/Spring、React+TS** → Lefthook，写 `<project-root>/lefthook.yml`
@@ -65,13 +85,13 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 
 → 验证：配置文件含 pre-commit 与 pre-push 两组检查。
 
-### Step 5 · 创建技术栈目录结构
+### Step 6 · 创建技术栈目录结构
 
 按 `references/<stack>.md` 的「目录结构」章节创建空目录骨架（用 `.gitkeep` 占位）。仅创建 rules 明确要求的目录，不臆造。
 
 → 验证：骨架目录存在。
 
-### Step 6 · 安装 hooks 框架并验证
+### Step 7 · 安装 hooks 框架并验证
 
 按栈安装并注册（**不替用户执行包管理器安装**，跨平台不可靠）：
 
@@ -92,6 +112,8 @@ AI coding 三件套 + 工程基础设施：
 - `docs/prd/prd-template.md` — PRD 空白模板
 - `docs/features/feature-template.feature` — BDD Gherkin 空白模板
 - `CHANGELOG.md` — Keep a Changelog 初始文件
+- `.github/pull_request_template.md` — GitHub PR 模板（仅开源到 GitHub 时）
+- `.github/ISSUE_TEMPLATE/*.md` — GitHub issue 模板（仅开源到 GitHub 时）
 - `lefthook.yml`（Java/React）或 `.pre-commit-config.yaml`（Rust）— Git hooks 配置
 - `<stack>/` 目录骨架
 - `.git/hooks/` — hooks 框架注册的钩子
@@ -103,7 +125,7 @@ AI coding 三件套 + 工程基础设施：
 - **Windows 编码**：调用 Python/Node 工具链时设 `PYTHONUTF8=1`，避免 GBK 编码撞 emoji 报错。
 - **幂等**：目标文件已存在则跳过并提示，绝不覆盖用户既有改动。
 - **不臆造命令**：hooks 命令必须来自 rules 或 references，禁止编造工具名或参数。
-- **少打断**：技术栈检测不到时才问；其余用合理默认（中文 CHANGELOG、`docs/features/`、`<stack>` 骨架），不逐项追问。
+- **少打断**：技术栈检测不到、或 GitHub 开源状态不明但出现 GitHub 信号时才问；其余用合理默认（中文 CHANGELOG、`docs/features/`、`<stack>` 骨架），不逐项追问。
 
 ## 技术栈分支速查
 
