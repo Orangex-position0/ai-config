@@ -41,10 +41,10 @@ cargo clippy --locked --all-targets --all-features -- -D warnings
 cargo todo
 ```
 
-Fallbacks:
+Test command policy:
 
-- Use `cargo nextest run --locked` when the project already uses `cargo-nextest`.
-- Use `cargo test --locked` otherwise.
+- Prefer `cargo nextest run --locked` for new and existing projects.
+- Use `cargo test --locked` only when `cargo-nextest` is unavailable and installing it is not appropriate or approved.
 - Use raw Cargo commands in `prek.toml` by default.
 - Use `justfile` wrappers only when commands are reused outside hooks or need cross-platform handling.
 
@@ -139,7 +139,7 @@ Keep required pull-request gates in one primary workflow file, usually `ci.yml`,
 
 Order CI layers as fmt, Clippy with warnings denied, tests, feature checks, vulnerability checks, dependency or license policy checks, then release build. Keep fmt, Clippy, tests, and release build in the base CI for new projects; add the other layers only when project risk justifies them.
 
-Prefer `cargo nextest run --locked` only when the project already uses `cargo-nextest`. Add MSRV checks only for projects that declare MSRV. For public libraries or production projects, copy `../assets/templates/github-actions-quality.yml` when extra dependency, security, or feature checks are needed.
+Prefer `cargo nextest run --locked` for new and existing projects. Fall back to `cargo test --locked` only when `cargo-nextest` is unavailable and installing it is not appropriate or approved. Add MSRV checks only for projects that declare MSRV. For public libraries or production projects, copy `../assets/templates/github-actions-quality.yml` when extra dependency, security, or feature checks are needed.
 
 Use `cargo hack` for crates with meaningful feature combinations. Use `cargo audit` for RustSec vulnerability checks. Use `cargo deny check` only when the project has dependency or license policy. When that policy is needed and no config exists, apply `../assets/templates/deny.toml`; the quality CI template already runs `cargo deny check` when `deny.toml` is present. Keep `cargo udeps` out of default CI because it requires nightly. Keep `cargo crap` as an explicit analysis task, not a default gate.
 

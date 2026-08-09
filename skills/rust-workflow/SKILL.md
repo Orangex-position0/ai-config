@@ -46,7 +46,7 @@ Then:
 5. Add only missing workflow pieces with useful content; never create empty placeholder files.
 6. Keep existing CI structure; add Rust checks to it instead of creating duplicate workflows.
 7. Use `edition = "2024"` only for new projects without an existing edition.
-8. Prefer `cargo-nextest` only when the project already uses it; otherwise use `cargo test`.
+8. Prefer `cargo nextest run --locked` for new and existing projects. Fall back to `cargo test --locked` only when `cargo-nextest` is unavailable and installing it is not appropriate or approved.
 9. Verify with the smallest command set that covers the touched surface.
 
 ## Template Assets
@@ -97,10 +97,10 @@ cargo clippy --locked --all-targets --all-features -- -D warnings
 cargo todo
 ```
 
-Fallbacks:
+Test command policy:
 
-- Use `cargo nextest run --locked` when the project already uses `cargo-nextest`.
-- Use `cargo test --locked` otherwise.
+- Prefer `cargo nextest run --locked` for new and existing projects.
+- Use `cargo test --locked` only when `cargo-nextest` is unavailable and installing it is not appropriate or approved.
 
 ## Final Report
 

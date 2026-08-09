@@ -24,7 +24,7 @@ rules 已规定 Rust 栈首选 **prek**（pre-commit 的 Rust 实现），完整
 
 要点：
 
-- `nextest` 未装时把 test hook 的 entry 改 `cargo test --locked`（`rust-workflow` fallback）。
+- `nextest` 未装时按 `rust-workflow` 的 Tool Safety 先询问是否安装；未安装或未获批准时才把 test hook 的 entry 改 `cargo test --locked`。
 - `cargo-todo` 缺失时提示 `cargo install cargo-todo`，宁留 hook 让首次提交报错暴露，不删。
 - 小型项目可把 clippy 从 pre-push 上移 pre-commit——问用户项目规模后定。
 - 团队要跨栈统一工具链时退回 Lefthook，把命令填入 `lefthook.yml`。
