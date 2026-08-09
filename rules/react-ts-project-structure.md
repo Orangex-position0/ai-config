@@ -105,7 +105,7 @@ import { apiClient } from "@/lib/axios";
 ### 2.6 TypeScript 规范
 
 - **文件扩展名**：含 JSX 用 `.tsx`，纯 TypeScript 用 `.ts`
-- **严格模式**：`tsconfig.json` 必须启用 `strict: true`
+- **严格编译基线**：`tsconfig.json` 必须启用 `strict: true`；新项目推荐同时启用 `noUncheckedIndexedAccess: true` 与 `exactOptionalPropertyTypes: true`
 - **类型就近放置**：仅单个 feature 使用的类型放在 feature 内 `types.ts`；跨 feature 共享的类型放在顶层 `types/`
 - **公共 API 导出类型**：`index.ts` 必须同时 re-export 公共类型（使用 `export type`）
 - **Props 定义**：使用 `interface XxxProps` 定义组件 Props，Props 接口与组件同文件或就近放置
@@ -190,12 +190,13 @@ MVP 阶段（< 1 个月）不需要 `features/`，超过 5 个 feature、3 人�
 ## 文档元数据
 
 - 规范名称：React + TypeScript 项目目录结构
-- 当前版本：v2.0.0
-- 最新更新：2026-07-04
+- 当前版本：v2.1.0
+- 最新更新：2026-08-09
 - 维护负责人：Xu Chengzi
 - 关联文档：[ddd-architecture.md](./ddd-architecture.md)、[tdd-development-flow.md](./tdd-development-flow.md)
 
 | 版本 | 日期 | 修订人 | 变更摘要 |
 |------|------|--------|---------|
+| v2.1.0 | 2026-08-09 | Xu Chengzi | 补充 TypeScript 新项目严格编译基线，推荐启用 `noUncheckedIndexedAccess` 与 `exactOptionalPropertyTypes`。 |
 | v2.0.0 | 2026-07-04 | Xu Chengzi | 升级为 React + TypeScript 专属规范；新增 TS 严格模式与类型组织规则；移除 Java 误区章节（建议独立为 rules 文件）；压缩至 200 行以内。 |
 | v1.0.0 | 2026-07-03 | Xu Chengzi | 首次发布。 |

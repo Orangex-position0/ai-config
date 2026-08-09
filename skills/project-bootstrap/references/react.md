@@ -9,8 +9,10 @@
 |---|---|---|
 | src/ 目录骨架 | `~/.claude/rules/react-ts-project-structure.md` | §2.1 目录骨架必须存在 |
 | feature 内部 segment | 同上 | §3.1 feature 内部 segment 划分 |
-| TS 严格模式与类型组织 | 同上 | §2.6 TypeScript 规范 |
+| TS 编译基线与类型组织 | 同上 | §2.6 TypeScript 规范 |
 | commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
+
+TS 编译基线与 `react-ts-project-template/references/project-structure.md` 的 TypeScript Baseline 保持一致：至少启用 `strict: true`，新项目推荐同时启用 `noUncheckedIndexedAccess: true` 与 `exactOptionalPropertyTypes: true`。
 
 ## lefthook.yml（增量，rules 未覆盖）
 
