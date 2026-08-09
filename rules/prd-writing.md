@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/docs/prd/**/*.md"
+  - "**/prd/**/*.md"
+  - "**/PRD/**/*.md"
+  - "**/*prd*.md"
+---
+
 # 产品需求文档（PRD）编写规范
 
 > 凡是涉及 PRD 编写、维护、范围管理的代码会话，必须遵守本规范。
@@ -82,53 +90,9 @@
 | 所有用户故事塞进一个 PRD | 单文档过长，AI 难消费 | 拆分为子 PRD |
 | 签字后不允许改 | 丧失 living document 价值 | 标注 last updated，持续更新 |
 
-## 最小模板
+## 模板来源
 
-```markdown
-# <功能名称> PRD
-
-## Meta
-
-- Participants: <PM>、<后端>、<设计>、<前端>
-- Status: Drafting | In Review | Approved | In Progress | Shipped
-- Target release: vX.Y.Z (YYYY-MM-DD)
-
-## Objectives
-
-- Business: <可量化目标>
-- Strategic Fit: <关联的大目标>
-- Success Metrics:
-    - <指标 1>
-    - <指标 2>
-
-## Background
-
-- <为什么要做>
-- <之前的尝试>
-
-## Assumptions
-
-- <技术假设>（待验证：<标注>）
-- <业务假设>
-
-## User Stories
-
-- As a <角色>, I want <功能>, so that <价值>
-
-## Design
-
-- 原型：<link>
-- 关键流程：<步骤描述>
-
-## Open Questions
-
-- <待决定事项>
-
-## What We're Not Doing
-
-- ❌ <范围外事项>（<原因>）
-- ❌ <范围外事项>（<原因>）
-```
+项目初始化时使用 `skills/project-bootstrap/assets/templates/prd-template.md` 作为空白模板。本 rule 只定义 PRD 质量约束，不保存可复制模板正文。
 
 ---
 

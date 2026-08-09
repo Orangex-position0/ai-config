@@ -1,17 +1,19 @@
 ---
 name: project-bootstrap
-description: 项目初始化脚手架（编排器）。在新项目启动或为现有项目补齐工程规范时使用：从用户全局 rules 实时读取规范，物化为项目的 AI coding 三件套文档模板（ADR / PRD / BDD）、CHANGELOG.md、按各技术栈约定配置的 Git hooks（Java/React 用 Lefthook，Rust 优先 prek；含 pre-commit / pre-push / commit-msg）、以及各技术栈约定的目录结构。当用户说「初始化项目」「搭建项目骨架」「生成 ADR 模板」「生成 PRD 模板」「生成 BDD / feature 模板」「生成 changelog 模板」「配置 git hooks」「配置 pre-commit / pre-push」「project init」「scaffold a new project」时触发。支持 Java/Spring Boot、React+TypeScript、Rust 三种技术栈；模板内容始终与 ~/.claude/rules/ 同步，skill 自身不持有模板副本。
+description: 项目初始化脚手架（编排器）。在新项目启动或为现有项目补齐工程规范时使用：先询问用户使用中文模板还是英文模板，读取用户全局 rules 作为质量约束，物化本 skill assets/templates/<language> 下的 AI coding 三件套文档模板（ADR / PRD / BDD）、接口/API 文档模板、CHANGELOG.md、按各技术栈约定配置的 Git hooks（Java/React 用 Lefthook，Rust 优先 prek；含 pre-commit / pre-push / commit-msg）、以及各技术栈约定的目录结构。当用户说「初始化项目」「搭建项目骨架」「生成 ADR 模板」「生成 PRD 模板」「生成 BDD / feature 模板」「生成 API / 接口文档模板」「生成 changelog 模板」「配置 git hooks」「配置 pre-commit / pre-push」「project init」「scaffold a new project」时触发。支持 Java/Spring Boot、React+TypeScript、Rust 三种技术栈。
 ---
 
 # Project Bootstrap
 
 ## 定位
 
-本 skill 是**编排器**，不是模板仓库。它执行时实时读取用户全局规范 `~/.claude/rules/`（Windows 下为 `C:\Users\<用户名>\.claude\rules\`），把规范**物化**为目标项目里的骨架文件。skill 自身不持有模板副本——避免与 rules 脱节腐化。
+本 skill 是**编排器**，同时持有项目初始化所需的中英文空白模板资产。它执行时读取当前宿主的用户全局规范目录（Claude: `~/.claude/rules/`；Codex: `~/.codex/rules/`）作为质量约束，再把 `assets/templates/<language>/` 中的模板**物化**为目标项目里的骨架文件。
 
 核心约束：
 
-- 模板内容（ADR / PRD / BDD 字段、CHANGELOG 格式、commit 规范）一律从 rules 读取，禁止在本 skill 内复制。
+- 文档模板（ADR / PRD / BDD / API / CHANGELOG）一律来自 `assets/templates/<language>/`，避免长模板常驻 rules 上下文。
+- 使用本 skill 前必须先询问用户选择 `zh-CN`（中文模板）还是 `en`（English templates）；即使能从项目语境推断，也不能自动选择。
+- rules 只提供质量约束和验收标准；模板变更必须同步检查对应 rule 是否仍满足字段要求。
 - GitHub issue / PR 模板来自本仓库 `templates/github/`，只在目标项目会开源到 GitHub 时物化。
 - rules 未覆盖的增量知识（如 React 的 lefthook 命令、Rust 的 prek 框架选择）才写进 `references/<stack>.md`。
 - 锚点统一用「文件路径 + 章节标题」，不用行号——rules 迭代频繁，行号必然腐化。
@@ -20,42 +22,63 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 
 按顺序执行，每步给出验证点。
 
-### Step 1 · 确认目标项目与技术栈
+### Step 1 · 确认模板语言、目标项目与技术栈
 
-1. 确认目标项目根目录。若不含 `.git/`，先提示 `git init`。
-2. 检测技术栈信号（按优先级）：
+1. 先询问用户选择文档模板语言：
+   - `zh-CN`：中文模板，适合中文工作环境、个人中文项目、内部项目。
+   - `en`：English templates，适合开源项目、国际协作、英文 README / docs 项目。
+   用户未回答前，不执行后续步骤。
+2. 确认目标项目根目录。若不含 `.git/`，先提示 `git init`。
+3. 检测技术栈信号（按优先级）：
    - `pom.xml` / `build.gradle*` / `**/*.java` → **Java/Spring**
    - `package.json` 且含 `vite`，或 `**/*.tsx` → **React+TS**
    - `Cargo.toml` / `**/*.rs` → **Rust**
    - 以上皆无 → 退化为「仅文档 + 最小 lefthook」，或主动询问用户。
-3. 检测不到时**主动询问**，不要默认假设技术栈。
+4. 判断是否存在 API/接口契约需求，满足任一条件即视为需要：
+   - 用户明确提到「接口」「API」「前后端分离」「后端调用」「OpenAPI」「Swagger」。
+   - Java/Spring 项目含 `Controller` / `RestController` / `RouterFunction` / `application*.yml` 等 Web 信号。
+   - React/TypeScript 项目含 `src/app/api/`、`pages/api/`、`server/`、`api/`、`openapi*.yaml`、`swagger*.yaml` 等信号。
+   - Rust 项目含 `axum`、`actix-web`、`rocket`、`poem`、`warp`、`utoipa` 等 Web/API 依赖或路由目录。
+5. 技术栈检测不到时**主动询问**，不要默认假设技术栈；API/接口契约需求不明时只在收尾说明中标记跳过，不为此单独打断。
 
-→ 验证：已确定 `<project-root>` 与技术栈。
+→ 验证：已确定 `<language>`、`<project-root>`、技术栈，以及是否需要 API 文档模板。
 
-### Step 2 · 读取语言无关的 rules 规范
+### Step 2 · 读取 rules 质量约束与本 skill 模板
 
-按下表 Read 对应 rules 文件，取出模板原文：
+按下表 Read 对应 rules 文件，作为生成后的验收依据：
 
 | 产物 | rules 源 | 取哪个章节 |
 |---|---|---|
-| ADR 模板 | `~/.claude/rules/adr-writing.md` | 「最小模板」 |
-| PRD 模板 | `~/.claude/rules/prd-writing.md` | 「最小模板」 |
-| BDD feature 模板 | `~/.claude/rules/bdd-writing.md` | 「最小模板」（Gherkin 段） |
-| CHANGELOG | `~/.claude/rules/changelog-standards.md` | §2 格式 + §5.1 语言选择 |
-| commit-msg 校验依据 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
+| ADR | `<rules>/adr-writing.md` | 核心字段 + 硬性约束 |
+| PRD | `<rules>/prd-writing.md` | 核心字段 + 硬性约束 |
+| BDD feature | `<rules>/bdd-writing.md` | Story / Scenario + 硬性约束 |
+| API 文档（按需） | `<rules>/api-documentation.md` | 接口名称至文档更新记录 |
+| CHANGELOG | `<rules>/changelog-standards.md` | 核心原则 + 分类规则 + 语言选择 |
+| commit-msg 校验依据 | `<rules>/conventional-commit.md` | 项目特定约定 |
 
-→ 验证：已读到三件套模板与 CHANGELOG 初始格式。
+再按下表 Read 本 skill 的模板资产：
+
+| 目标文件 | 模板资产 |
+|---|---|
+| `docs/adr/adr-template.md` | `assets/templates/<language>/adr-template.md` |
+| `docs/prd/prd-template.md` | `assets/templates/<language>/prd-template.md` |
+| `docs/features/feature-template.feature` | `assets/templates/<language>/feature-template.feature` |
+| `docs/api/api-template.md`（按需） | `assets/templates/<language>/api-template.md` |
+| `CHANGELOG.md` | `assets/templates/<language>/changelog-template.md` |
+
+→ 验证：已读到相关 rules 质量约束与需要物化的模板资产。
 
 ### Step 3 · 物化文档模板（语言无关）
 
-在 `<project-root>/` 下生成 AI coding 三件套文档模板 + CHANGELOG：
+在 `<project-root>/` 下生成 AI coding 三件套文档模板 + CHANGELOG。若目标项目包含后端接口、前后端分离边界、API route、或用户明确提到「接口 / API / 后端调用」，同时生成 API 文档模板：
 
-1. `docs/adr/adr-template.md` ← adr-writing.md「最小模板」原文（占位符 `<...>` 保留）。
-2. `docs/prd/prd-template.md` ← prd-writing.md「最小模板」原文（全字段：Meta / Objectives / Background / Assumptions / User Stories / Design / Open Questions / What We're Not Doing）。
-3. `docs/features/feature-template.feature` ← bdd-writing.md「最小模板」的 Gherkin 段（Feature + Scenario + Given/When/Then 骨架）。默认放 `docs/features/`；若项目偏好可执行规约紧邻测试代码，改 `tests/features/`（rules 两者皆允许）。
-4. `CHANGELOG.md` ← changelog-standards.md §2 模板。语言默认**简体中文**（§5.1：个人/内部项目）；开源项目改英文或双语（§5.2）。
+1. `docs/adr/adr-template.md` ← `assets/templates/<language>/adr-template.md`（占位符 `<...>` 保留）。
+2. `docs/prd/prd-template.md` ← `assets/templates/<language>/prd-template.md`。
+3. `docs/features/feature-template.feature` ← `assets/templates/<language>/feature-template.feature`。默认放 `docs/features/`；若项目偏好可执行规约紧邻测试代码，改 `tests/features/`（rules 两者皆允许）。
+4. `CHANGELOG.md` ← `assets/templates/<language>/changelog-template.md`。
+5. `docs/api/api-template.md` ← `assets/templates/<language>/api-template.md`。仅在项目存在 API/接口契约需求时生成；纯前端静态站点、CLI、库项目默认跳过，并在收尾说明中标记为跳过。若项目已有 `openapi.yaml` / `swagger.yaml`，仍生成 Markdown 模板作为“如何调用”的人工说明入口，但不得覆盖既有规范文件。
 
-→ 验证：四个文件存在，字段与 rules 完全一致（未自行增删）。
+→ 验证：基础四个文件存在；需要 API 文档时第五个文件存在；生成文件满足对应 rules 字段要求；跳过 API 文档时说明跳过原因。
 
 ### Step 4 · 判断是否物化 GitHub 开源模板
 
@@ -111,6 +134,7 @@ AI coding 三件套 + 工程基础设施：
 - `docs/adr/adr-template.md` — ADR 空白模板
 - `docs/prd/prd-template.md` — PRD 空白模板
 - `docs/features/feature-template.feature` — BDD Gherkin 空白模板
+- `docs/api/api-template.md` — API / 接口文档空白模板（存在 API/接口契约需求时）
 - `CHANGELOG.md` — Keep a Changelog 初始文件
 - `.github/pull_request_template.md` — GitHub PR 模板（仅开源到 GitHub 时）
 - `.github/ISSUE_TEMPLATE/*.md` — GitHub issue 模板（仅开源到 GitHub 时）
@@ -118,14 +142,15 @@ AI coding 三件套 + 工程基础设施：
 - `<stack>/` 目录骨架
 - `.git/hooks/` — hooks 框架注册的钩子
 
-可选扩展（用户提及再加，不主动生成）：`.editorconfig`、`README.md`、API 文档骨架（`rules/api-documentation.md`）。
+可选扩展（用户提及再加，不主动生成）：`.editorconfig`、`README.md`。
 
 ## 执行约束
 
 - **Windows 编码**：调用 Python/Node 工具链时设 `PYTHONUTF8=1`，避免 GBK 编码撞 emoji 报错。
 - **幂等**：目标文件已存在则跳过并提示，绝不覆盖用户既有改动。
 - **不臆造命令**：hooks 命令必须来自 rules 或 references，禁止编造工具名或参数。
-- **少打断**：技术栈检测不到、或 GitHub 开源状态不明但出现 GitHub 信号时才问；其余用合理默认（中文 CHANGELOG、`docs/features/`、`<stack>` 骨架），不逐项追问。
+- **模板语言必须确认**：无论项目是否明显中文或英文，都必须先问用户选择 `zh-CN` 还是 `en`，不能默认。
+- **少打断**：除模板语言、技术栈检测不到、或 GitHub 开源状态不明但出现 GitHub 信号外，不逐项追问；API/接口契约需求不明时默认跳过并说明原因。
 
 ## 技术栈分支速查
 

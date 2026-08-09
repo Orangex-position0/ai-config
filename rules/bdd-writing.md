@@ -1,3 +1,11 @@
+---
+paths:
+  - "**/docs/features/**/*.feature"
+  - "**/tests/features/**/*.feature"
+  - "**/*.feature"
+  - "**/*bdd*.md"
+---
+
 # 行为驱动开发（BDD）编写规范
 
 > 凡是涉及 BDD 场景编写、测试命名、行为规约的代码会话，必须遵守本规范。
@@ -82,21 +90,9 @@ BDD 场景（Given/When/Then）→ 翻译为代码层测试 → TDD 循环写实
 | 跳过故事层直接写场景 | 失去"价值"上下文 | 先 Story 后 Scenario |
 | Gherkin 步骤不重用 | 步骤爆炸，维护成本高 | 抽取共用步骤到 steps 文件 |
 
-## 最小模板
+## 模板来源
 
-### Gherkin 示例
-
-```gherkin
-Feature: <功能名称>
-
-  Scenario: <具体行为描述>
-
-    Given <初始上下文>
-    And <补充上下文>
-    When <事件发生>
-    Then <业务结果>
-    And <补充结果>
-```
+项目初始化时使用 `skills/project-bootstrap/assets/templates/feature-template.feature` 作为 Gherkin 空白模板。本 rule 只定义 BDD 质量约束，不保存可复制模板正文。
 
 ### 代码层示例（Java）
 
