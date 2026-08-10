@@ -1,7 +1,29 @@
 # Rust 栈
 
 > 锚点最后验证日期：2026-07-20
-> 本文件只持有「rules 锚点 + 物化指令」，模板与配置内容一律去 rules 读原文。
+> 本文件只持有「委托边界 + rules 锚点」。Rust 工具链、hooks、CI 与 Cargo 项目结构一律委托 `$rust-workflow`。
+
+## 委托边界
+
+`project-bootstrap` 检测到 Rust 项目后：
+
+1. 继续执行通用文档模板物化：ADR、PRD、BDD、CHANGELOG，以及按需 API 文档。
+2. 继续按 GitHub 开源判断物化 issue / PR 模板。
+3. **REQUIRED SUB-SKILL:** Use `rust-workflow` for all Rust-specific bootstrap work.
+
+`project-bootstrap` 不再自行生成 Rust hooks、Cargo 配置、CI、`rust-toolchain.toml`、`rustfmt.toml`、Clippy lint 配置、`Cargo.lock` 策略、release profile、linker/cache/profiling 配置、cross build 配置或 Rust 目录骨架。
+
+## rust-workflow 输入
+
+调用 `$rust-workflow` 时，把以下已确认信息传给它：
+
+- `<project-root>`
+- 用户选择的模板语言，仅作为最终汇报语言参考
+- 是否已生成通用文档模板
+- 是否已生成 GitHub issue / PR 模板
+- 是否检测到 API/接口契约需求
+
+其余 Rust 策略由 `$rust-workflow` 按目标项目文件自动检测；只有当选择会改变项目策略、增加 CI 成本、需要全局或网络安装、或无法从仓库推断时再问用户。
 
 ## rules 锚点
 
@@ -14,39 +36,3 @@
 | Workspace 与 MSRV | 同上 | Project Configuration |
 | 编码规范 | `~/.claude/rules/rust/rust-conventions.md` | 全文 |
 | commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
-
-## Git hooks（物化指令）
-
-rules 已规定 Rust 栈首选 **prek**（pre-commit 的 Rust 实现），完整框架选型、安装与配置见 `rust-workflow-standards.md` 的 Git Hooks。物化时直接复用 rules：
-
-1. 复制 `rust-workflow` skill 的 `prek.toml` 配置到 `<project-root>/prek.toml`，不自行改命令。
-2. 执行 `prek install` 注册。
-
-要点：
-
-- `nextest` 未装时按 `rust-workflow` 的 Tool Safety 先询问是否安装；未安装或未获批准时才把 test hook 的 entry 改 `cargo test --locked`。
-- `cargo-todo` 缺失时提示 `cargo install cargo-todo`，宁留 hook 让首次提交报错暴露，不删。
-- 小型项目可把 clippy 从 pre-push 上移 pre-commit——问用户项目规模后定。
-- 团队要跨栈统一工具链时退回 Lefthook，把命令填入 `lefthook.yml`。
-
-## 项目配置（物化提醒）
-
-新建 Rust 项目时，按 `rust-workflow-standards.md` 的 Project Configuration / Release Profile 提醒或生成以下配置：
-
-- `rust-toolchain.toml`：固定 `channel = "stable"` + `components = ["rustfmt", "clippy"]`。
-- `Cargo.lock` 策略：二进制项目提交，库项目不提交。**先问项目类型**再决定是否 `.gitignore` 它。
-- `rust-version`：写入 `Cargo.toml [package]`。
-- Workspace 子 crate 依赖用 `workspace = true`——仅当存在多个真实 crate 时提醒。
-
-## 目录结构（物化指令）
-
-Cargo 约定目录，按需建空骨架（`.gitkeep` 占位）：
-
-```text
-src/          # main.rs 或 lib.rs（必建）
-tests/        # 集成测试（按需）
-benches/      # 基准（按需，rules/performance-benchmark.md）
-examples/     # 示例（按需）
-```
-
-`src/` 必建，其余三项按用户需求。Workspace 结构按 Project Configuration 组建，不臆造子 crate。

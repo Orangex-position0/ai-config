@@ -1,6 +1,6 @@
 ---
 name: project-bootstrap
-description: 项目初始化脚手架（编排器）。在新项目启动或为现有项目补齐工程规范时使用：先询问用户使用中文模板还是英文模板，读取用户全局 rules 作为质量约束，物化本 skill assets/templates/<language> 下的 AI coding 三件套文档模板（ADR / PRD / BDD）、接口/API 文档模板、CHANGELOG.md、按各技术栈约定配置的 Git hooks（Java/React 用 Lefthook，Rust 优先 prek；含 pre-commit / pre-push / commit-msg）、以及各技术栈约定的目录结构。当用户说「初始化项目」「搭建项目骨架」「生成 ADR 模板」「生成 PRD 模板」「生成 BDD / feature 模板」「生成 API / 接口文档模板」「生成 changelog 模板」「配置 git hooks」「配置 pre-commit / pre-push」「project init」「scaffold a new project」时触发。支持 Java/Spring Boot、React+TypeScript、Rust 三种技术栈。
+description: 项目初始化脚手架（编排器）。在新项目启动或为现有项目补齐工程规范时使用：先询问用户使用中文模板还是英文模板，读取用户全局 rules 作为质量约束，物化 ADR / PRD / BDD / API / CHANGELOG 模板、GitHub 开源模板、Java/Spring 或 React+TS hooks；React+TS 项目结构委托 react-ts-project-template，Rust 项目工具链、hooks、CI 和目录约定委托 rust-workflow。触发词：初始化项目、搭建项目骨架、生成 ADR/PRD/BDD/API/changelog 模板、配置 git hooks、project init、scaffold a new project。
 ---
 
 # Project Bootstrap
@@ -15,7 +15,9 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 - 使用本 skill 前必须先询问用户选择 `zh-CN`（中文模板）还是 `en`（English templates）；即使能从项目语境推断，也不能自动选择。
 - rules 只提供质量约束和验收标准；模板变更必须同步检查对应 rule 是否仍满足字段要求。
 - GitHub issue / PR 模板来自本仓库 `templates/github/`，只在目标项目会开源到 GitHub 时物化。
-- rules 未覆盖的增量知识（如 React 的 lefthook 命令、Rust 的 prek 框架选择）才写进 `references/<stack>.md`。
+- rules 未覆盖的增量知识（如 React 的 lefthook 命令）才写进 `references/<stack>.md`。
+- **React 职责边界**：本 skill 可为 Vite + React + TypeScript 生成 `lefthook.yml`；`src/` 项目结构、路由布局、feature 模块边界和 ESLint 架构边界检查必须交给 `$react-ts-project-template`，其结构依据是 `react-ts-project-structure.md`。
+- **Rust 职责边界**：本 skill 只物化通用文档模板与 GitHub 开源模板；检测到 Rust 后，Cargo 工具链、hooks、CI、`rust-toolchain.toml`、`rustfmt.toml`、Clippy、`Cargo.lock` 策略和 Rust 目录结构必须交给 `$rust-workflow`。
 - 锚点统一用「文件路径 + 章节标题」，不用行号——rules 迭代频繁，行号必然腐化。
 
 ## 工作流
@@ -103,25 +105,28 @@ description: 项目初始化脚手架（编排器）。在新项目启动或为�
 
 1. Read `references/<stack>.md`，确定该栈的 hooks 框架与命令：
    - **Java/Spring、React+TS** → Lefthook，写 `<project-root>/lefthook.yml`
-   - **Rust** → 首选 prek，写 `<project-root>/.pre-commit-config.yaml`（drop-in 兼容 pre-commit）；团队要统一工具链时退回 Lefthook。
+   - **Rust** → 不在本步骤生成 hooks。改为加载并执行 `$rust-workflow`，由它按目标项目状态决定 `prek` / Lefthook、配置文件、安装提示与验证命令。
 2. YAML 注释一律中文、独占行；禁行尾注释。
 
-→ 验证：配置文件含 pre-commit 与 pre-push 两组检查。
+→ 验证：Java/React 配置文件含 pre-commit 与 pre-push 两组检查；Rust 已进入 `$rust-workflow` 的验证流程。
 
 ### Step 6 · 创建技术栈目录结构
 
 按 `references/<stack>.md` 的「目录结构」章节创建空目录骨架（用 `.gitkeep` 占位）。仅创建 rules 明确要求的目录，不臆造。
 
+- Java/Spring：由本步骤按 `references/java.md` 处理。
+- React+TS：跳过本步骤，加载并执行 `$react-ts-project-template`，由它按 Vite SPA 状态、路由布局选择和 `react-ts-project-structure.md` 处理。
+- Rust：跳过本步骤，由 `$rust-workflow` 根据 Cargo 项目类型处理。
+
 → 验证：骨架目录存在。
 
 ### Step 7 · 安装 hooks 框架并验证
 
-按栈安装并注册（**不替用户执行包管理器安装**，跨平台不可靠）：
+按栈安装并注册（**不替用户执行包管理器安装**，跨平台不可靠）。Rust 项目跳过本步骤，安装、注册与验证由 `$rust-workflow` 的 Tool Safety 与 Verification 规则接管：
 
 | 栈 | 框架 | 安装 | 注册 |
 |---|---|---|---|
 | Java/React | Lefthook | `brew` / `scoop` / `go install` 三选一 | `lefthook install` |
-| Rust | prek（首选） | `cargo install prek` | `prek install` |
 
 → 验证：注册命令成功，`.git/hooks/` 下出现对应钩子。
 
@@ -138,8 +143,10 @@ AI coding 三件套 + 工程基础设施：
 - `CHANGELOG.md` — Keep a Changelog 初始文件
 - `.github/pull_request_template.md` — GitHub PR 模板（仅开源到 GitHub 时）
 - `.github/ISSUE_TEMPLATE/*.md` — GitHub issue 模板（仅开源到 GitHub 时）
-- `lefthook.yml`（Java/React）或 `.pre-commit-config.yaml`（Rust）— Git hooks 配置
-- `<stack>/` 目录骨架
+- `lefthook.yml`（Java/React）— Git hooks 配置
+- React TS template 文件（React+TS 项目）— 由 `$react-ts-project-template` 按目标项目状态决定
+- Rust workflow 文件（Rust 项目）— 由 `$rust-workflow` 按目标项目状态决定
+- `<stack>/` 目录骨架（React+TS / Rust 除外，分别交给 `$react-ts-project-template` / `$rust-workflow`）
 - `.git/hooks/` — hooks 框架注册的钩子
 
 可选扩展（用户提及再加，不主动生成）：`.editorconfig`、`README.md`。
@@ -157,6 +164,6 @@ AI coding 三件套 + 工程基础设施：
 | 栈 | 检测信号 | references | hooks 框架 |
 |---|---|---|---|
 | Java/Spring | `pom.xml` / `build.gradle*` | `references/java.md` | Lefthook |
-| React+TS | `package.json` + `vite` / `*.tsx` | `references/react.md` | Lefthook |
-| Rust | `Cargo.toml` / `*.rs` | `references/rust.md` | prek（首选）/ Lefthook |
+| React+TS | `package.json` + `vite` / `*.tsx` | `references/react.md` + `$react-ts-project-template` | Lefthook |
+| Rust | `Cargo.toml` / `*.rs` | `references/rust.md` | 委托 `$rust-workflow` |
 | 通用/不确定 | 无上述信号 | — | 仅执行 Step 2/3 + 最小 Lefthook，不建栈特定目录 |

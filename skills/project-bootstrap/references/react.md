@@ -1,7 +1,18 @@
 # React + TypeScript 栈（Vite SPA）
 
 > 锚点最后验证日期：2026-07-20
-> **本栈 rules 无工作流规范**（`react-ts-project-standards.md` 仅讲目录结构）。lefthook 命令是本 skill 的增量知识，下方为权威来源。
+> 本文件只持有「委托边界 + hooks 增量」。项目结构、路由布局、feature 边界和 ESLint 架构边界检查委托 `$react-ts-project-template`；lefthook 命令仍是本 skill 的增量知识。
+
+## 委托边界
+
+`project-bootstrap` 检测到 Vite + React + TypeScript 项目后：
+
+1. 继续执行通用文档模板物化：ADR、PRD、BDD、CHANGELOG，以及按需 API 文档。
+2. 继续按 GitHub 开源判断物化 issue / PR 模板。
+3. 继续按本文件的 `lefthook.yml` 增量配置 hooks。
+4. **REQUIRED SUB-SKILL:** Use `react-ts-project-template` for React-specific `src/` structure, route layout, feature module boundaries, and optional ESLint boundary checks.
+
+`project-bootstrap` 不再自行创建 React `src/` 目录骨架，也不自行决定 `src/pages` + `src/app/router` 与 `src/routes` 的路由布局。
 
 ## rules 锚点
 
@@ -13,6 +24,17 @@
 | commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
 
 TS 编译基线与 `react-ts-project-template/references/project-structure.md` 的 TypeScript Baseline 保持一致：至少启用 `strict: true`，新项目推荐同时启用 `noUncheckedIndexedAccess: true` 与 `exactOptionalPropertyTypes: true`。
+
+## react-ts-project-template 输入
+
+调用 `$react-ts-project-template` 时，把以下已确认信息传给它：
+
+- `<project-root>`
+- 已确认项目为 Vite + React + TypeScript，或检测信号与疑点
+- 用户选择的模板语言，仅作为最终汇报语言参考
+- 是否已生成通用文档模板
+- 是否已生成 GitHub issue / PR 模板
+- 是否检测到 API/接口契约需求
 
 ## lefthook.yml（增量，rules 未覆盖）
 
@@ -54,9 +76,3 @@ commit-msg:
 ## 前提依赖
 
 `prettier` / `vitest` / `commitlint` / `@commitlint/config-conventional` 须在 `devDependencies`。检测 `package.json`，缺失项**列清单提示用户 `npm install -D ...`**，不替用户执行安装。
-
-## 目录结构（物化指令）
-
-按 `react-ts-project-structure.md` §2.1 在 `src/` 下建 12 个目录（`app/assets/components/config/features/hooks/lib/pages/providers/routes/types/utils`），每个放 `.gitkeep`。feature segment（§3.1）按需建，不预建空 feature。
-
-**MVP 阶段（< 1 个月、< 5 feature）**：遵循 §3.5「别过度设计」，可只建 `components/` `hooks/` `lib/` `utils/`，跳过 `features/`。询问用户项目阶段后决定。
