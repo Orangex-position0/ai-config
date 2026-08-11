@@ -147,6 +147,21 @@ log.info("用户登录: name={}, password={}", name, password);
 log.info("用户登录: name={}", name);
 ```
 
+### 1.7 JSON 解析库
+
+- ❌ 禁止使用 `fastjson` / `fastjson2`（历史上有大量反序列化漏洞：为性能牺牲安全检查，使用字节码生成绕开反射检查、自定义字符串解析器）
+- ✅ JSON 序列化 / 反序列化优先使用 Jackson（`jackson-databind`，Spring Boot 默认自带），备选 Gson
+- ✅ 反序列化不可信数据时必须限制目标类型或使用类型白名单（见 2.3），禁止自动解析任意类型
+
+```java
+// 反例：使用 fastjson 解析
+JSONObject obj = JSON.parseObject(input);
+
+// 正例：Jackson 解析为明确类型
+ObjectMapper mapper = new ObjectMapper();
+Order order = mapper.readValue(input, Order.class);
+```
+
 ---
 
 ## 2. DESIGN RULE
@@ -167,7 +182,7 @@ log.info("用户登录: name={}", name);
 ### 2.3 反序列化与序列化
 
 - ❌ 禁止使用 Java 原生序列化（`ObjectInputStream`）处理不可信数据（远程代码执行风险）
-- ✅ 优先 JSON 序列化（Jackson / Gson）
+- ✅ 优先 JSON 序列化（Jackson / Gson）；JSON 解析库硬约束（禁 fastjson）见 1.7
 - ✅ Jackson 开启多态类型时必须使用 `PolymorphicTypeValidator` 白名单，禁止 `enableDefaultTyping()` 全开
 
 ### 2.4 跨域与请求伪造
@@ -218,6 +233,7 @@ public class GlobalExceptionHandler {
 6. 日志是否输出 PII 或密码？
 7. 依赖是否存在未处理的高危 CVE？
 8. 是否存在原生反序列化不可信数据？
+9. 是否误用 fastjson / fastjson2 而未用 Jackson？
 
 ---
 
