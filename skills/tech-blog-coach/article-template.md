@@ -1,13 +1,22 @@
 +++
 title = '文章标题'
 date = 2026-07-30T00:00:00+08:00
+# 文章发布后每次实质修改，同步更新为修改时间；Stack 主题会在页脚自动显示"最后更新于"
+lastmod = 2026-07-30T00:00:00+08:00
 draft = false
 description = '一句话说明文章解决什么问题、读者能学到什么'
+# 封面图（可选）：图片放文章目录后替换为文件名；无需封面图时删除本行
+image = 'cover.jpg'
 categories = ['category']
 tags = ['tag1', 'tag2']
 series = '系列名'
 seriesWeight = 1
 +++
+
+{{< details summary="更新记录" >}}
+- 2026-08-12：修正第 3 步配置命令；新增「踩坑」章节
+- 2026-08-01：初始发布
+{{< /details >}}
 
 ## 背景 & 问题
 
