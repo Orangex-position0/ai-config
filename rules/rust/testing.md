@@ -20,15 +20,15 @@ paths:
 my_crate/
 ├── src/
 │   ├── lib.rs           # Unit tests in #[cfg(test)] modules
-│   ├── auth/
-│   │   └── mod.rs       # #[cfg(test)] mod tests { ... }
+│   ├── auth.rs          # #[cfg(test)] mod tests { ... } — 2024 layout, no mod.rs
+│   ├── orders.rs        # Module entry
 │   └── orders/
 │       └── service.rs   # #[cfg(test)] mod tests { ... }
 ├── tests/               # Integration tests (each file = separate binary)
 │   ├── api_test.rs
 │   ├── db_test.rs
 │   └── common/          # Shared test utilities
-│       └── mod.rs
+│       └── mod.rs       # Only mod.rs allowed: each tests/*.rs is its own binary
 └── benches/             # Criterion benchmarks
     └── benchmark.rs
 ```

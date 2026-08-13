@@ -393,21 +393,23 @@ unsafe { slice.get_unchecked(index) }
 
 ### Organize by Domain, Not by Type
 
+New projects must use the Rust 2024 Edition module layout: a module entry is a same-named file (`auth.rs`) beside its subdirectory (`auth/`). `mod.rs` is banned in new code — see `rules/rust/rust-conventions.md` §8.
+
 ```text
 my_app/
 ├── src/
 │   ├── main.rs
 │   ├── lib.rs
-│   ├── auth/          # Domain module
-│   │   ├── mod.rs
+│   ├── auth.rs        # mod auth; declared here
+│   ├── auth/
 │   │   ├── token.rs
 │   │   └── middleware.rs
-│   ├── orders/        # Domain module
-│   │   ├── mod.rs
+│   ├── orders.rs      # mod orders; declared here
+│   ├── orders/
 │   │   ├── model.rs
 │   │   └── service.rs
-│   └── db/            # Infrastructure
-│       ├── mod.rs
+│   ├── db.rs          # mod db; declared here
+│   └── db/
 │       └── pool.rs
 ├── tests/             # Integration tests
 ├── benches/           # Benchmarks

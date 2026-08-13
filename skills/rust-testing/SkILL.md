@@ -165,8 +165,8 @@ my_crate/
 ├── tests/              # Integration tests
 │   ├── api_test.rs     # Each file is a separate test binary
 │   ├── db_test.rs
-│   └── common/         # Shared test utilities
-│       └── mod.rs
+│   └── common/         # Shared test utilities — mod.rs is the one allowed exception
+│       └── mod.rs      # (every tests/*.rs compiles as its own binary)
 ```
 
 ### Writing Integration Tests

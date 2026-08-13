@@ -116,19 +116,21 @@ Organize modules by domain or capability, not by technical type.
 
 ### Module Layout
 
-Prefer the Rust 2024 Edition module layout for new code:
+New projects must use the Rust 2024 Edition module layout: a module entry is a same-named `.rs` file beside a directory holding its submodules, never a `mod.rs`.
 
 ```text
 src/
-+-- network.rs
++-- network.rs          # mod network; declared here
 +-- network/
-    +-- client.rs
+    +-- client.rs       # mod client; declared in network.rs
     +-- server.rs
 ```
 
-This layout keeps the module entry (`network.rs`) in the parent directory while placing implementation files in a dedicated subdirectory.
+This layout keeps the module entry (`network.rs`) in the parent directory while placing implementation files in a dedicated subdirectory. Do not create `mod.rs` files in new code.
 
-For existing projects, follow the project's established module layout instead of mixing styles within the same crate.
+The only allowed exception is `tests/common/mod.rs` for integration-test helpers — every file directly under `tests/` compiles as its own test binary, so shared utilities must live in a subdirectory.
+
+Existing projects keep their established layout (`mod.rs` included) instead of mixing styles within the same crate.
 
 ## 9. Visibility
 
