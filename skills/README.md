@@ -16,6 +16,7 @@
 | [adr](./adr/SKILL.md) | 架构决策记录（ADR）的编写与审计 |
 | [write](./write/SKILL.md) | 中英文文案润色、去 AI 味 |
 | [tech-blog-coach](./tech-blog-coach/SKILL.md) | 基于费曼学习法的技术博客教练 |
+| [open-source-readme](./open-source-readme/SKILL.md) | 开源项目 README 创建、重写与审查 |
 | [rust-patterns](./rust-patterns/SKILL.md) | Rust 惯用模式、所有权、错误处理、并发与类型建模 |
 | [rust-testing](./rust-testing/SkILL.md) | Rust 单元测试、集成测试、异步测试与 TDD |
 | [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | Tokio 任务生命周期、取消、队列与 shutdown 审查 |
@@ -56,6 +57,7 @@
 | [adr](./adr/SKILL.md) | 写 ADR、记录架构决策、审计 ADR | 含 5 要素与生命周期的 ADR 文档 |
 | [write](./write/SKILL.md) | 帮我写、改稿、润色、去 AI 味 | 自然流畅的中英文文案 |
 | [tech-blog-coach](./tech-blog-coach/SKILL.md) | 技术博客写作、笔记转文章 | 五段式结构文章、写作策略 |
+| [open-source-readme](./open-source-readme/SKILL.md) | 创建、重写、审查开源项目 README | 结构清晰、命令真实、可快速上手的 README |
 
 ### 5. Rust
 
