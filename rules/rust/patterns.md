@@ -47,7 +47,7 @@ impl OrderService {
 
 ## Newtype Pattern for Type Safety
 
-Prevent argument mix-ups with distinct wrapper types. Validate at construction when the wrapped value has domain rules.
+Use newtype when a raw value crosses module, layer, process, or protocol boundaries and mixing it up would be a real bug. Use `type alias` only to shorten complex signatures; it does not create type isolation.
 
 ```rust
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Hash)]
@@ -62,25 +62,11 @@ fn get_order(user: UserId, order: OrderId) -> anyhow::Result<Order> {
 }
 ```
 
-```rust
-#[derive(Debug, Clone, PartialEq, Eq)]
-pub struct Email(String);
-
-impl Email {
-    pub fn parse(input: &str) -> anyhow::Result<Self> {
-        let trimmed = input.trim();
-        if trimmed.contains('@') && trimmed.len() >= 3 {
-            Ok(Self(trimmed.to_owned()))
-        } else {
-            anyhow::bail!("invalid email")
-        }
-    }
-
-    pub fn as_str(&self) -> &str {
-        &self.0
-    }
-}
-```
+- Keep fields private when the type owns an invariant; expose construction through `new`, `try_new`, `parse`, `FromStr`, or `TryFrom`.
+- Implement only traits and conversions that preserve the type's semantics.
+- Avoid `Deref` for business newtypes unless exposing the whole inner API is intentional.
+- Use `#[repr(transparent)]` only for layout or ABI contracts.
+- Do not wrap local, unambiguous primitives that have no invariant or boundary role.
 
 ## Enum State Machines
 
@@ -407,4 +393,5 @@ Newtypes, typestate marker types, and `PhantomData` have no meaningful runtime c
 ## References
 
 See skill: `rust-patterns` for comprehensive patterns including ownership, traits, generics, concurrency, and async.
+See skill: `rust-newtype-pattern` for newtype design checklists, framework boundary examples, and detailed tradeoffs.
 See skill: `rust-typestate-audit` before broad typestate refactors.
