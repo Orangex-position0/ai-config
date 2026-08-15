@@ -26,7 +26,10 @@ fn load_api_key() -> anyhow::Result<String> {
 
 ## SQL Injection Prevention
 
-- Always use parameterized queries — never format user input into SQL strings
+- Always pass external input values through bind parameters, such as `sqlx::query(...).bind(value)` or `query!` / `query_as!` macro placeholder arguments
+- Never format user input, request parameters, form values, headers, cookies, or other external values into SQL strings
+- `.bind()` binds values only; it cannot bind SQL identifiers or syntax such as table names, column names, `ORDER BY` fields, or sort directions
+- Dynamic SQL structure must come from trusted code or whitelist mapping, never directly from external input
 - Use query builder or ORM (sqlx, diesel, sea-orm) with bind parameters
 
 ```rust
@@ -40,6 +43,18 @@ sqlx::query("SELECT * FROM users WHERE name = $1")
     .bind(&name)
     .fetch_one(&pool)
     .await?;
+```
+
+```rust
+// GOOD — 动态 SQL 标识符来自白名单
+let sort_column = match sort.as_deref() {
+    Some("created_at") => "created_at",
+    Some("name") => "name",
+    _ => "id",
+};
+
+let query = format!("SELECT * FROM users ORDER BY {sort_column}");
+sqlx::query(&query).fetch_all(&pool).await?;
 ```
 
 ## Input Validation
