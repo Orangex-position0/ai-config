@@ -132,14 +132,27 @@ The only allowed exception is `tests/common/mod.rs` for integration-test helpers
 
 Existing projects keep their established layout (`mod.rs` included) instead of mixing styles within the same crate.
 
-## 9. Visibility
+## 9. Crate and Workspace Boundaries
+
+Start with a single crate unless a real boundary already exists.
+
+- Use modules for unstable internal structure.
+- Promote a module to a crate only when it needs independent compilation, reuse across binaries or repositories, dependency isolation, a stable public API, or a team ownership boundary.
+- Use a workspace only when multiple crates are developed, tested, and versioned together.
+- Keep `main.rs` thin: parse configuration, initialize runtime dependencies, and call into `lib.rs` or application modules.
+- Keep domain code independent from infrastructure concerns such as web frameworks, database drivers, queues, object storage, and provider SDKs.
+- Define external capabilities as traits in the inner layer that needs them; implement those traits in infrastructure or adapter modules.
+- Keep foundation crates small and stable. Do not put business rules in `common`, `utils`, or foundation crates.
+- Choose module, crate, and workspace boundaries by domain or capability ownership, not by technical type names.
+
+## 10. Visibility
 
 - Keep items private by default.
 - Use `pub(crate)` for internal sharing.
 - Use `pub` only for the crate's public API.
 - Re-export the public API from `lib.rs` when it improves caller ergonomics.
 
-## 10. Related Documents
+## 11. Related Documents
 
 - [rust-error-handling.md](./rust-error-handling.md)
 - [rust-workflow-standards.md](./rust-workflow-standards.md)

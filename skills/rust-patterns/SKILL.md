@@ -416,6 +416,27 @@ my_app/
 └── Cargo.toml
 ```
 
+### Boundary-First Crate Structure
+
+Use a boundary-first decision flow before changing Rust project structure:
+
+1. Name the domain or capability boundary that owns the code.
+2. Start with a module inside the existing crate while the boundary is still changing.
+3. Keep `main.rs` thin; move testable application behavior into `lib.rs` and domain modules.
+4. Promote a module to a crate only for independent compilation, reuse across binaries or repositories, dependency isolation, a stable API, or team ownership.
+5. Introduce a workspace only when multiple real crates need shared development, testing, dependency policy, or release coordination.
+6. Put heavy or replaceable dependencies behind adapter or infrastructure crates when they would otherwise leak into core logic.
+7. Keep dependencies one-way: API, CLI, worker, and infrastructure depend inward on application or domain code; domain code does not depend on infrastructure.
+8. Define external capabilities as traits in the inner layer that needs them, then implement them in outer adapters.
+9. Avoid `common` and `utils` as ownership buckets; rename the code by the business or capability boundary it serves.
+
+Complete the structure decision by stating:
+
+- Whether the chosen boundary is a module, crate, or workspace.
+- Why a heavier boundary was not chosen.
+- Where the public API is re-exported or intentionally kept private.
+- How dependency direction stays one-way.
+
 ### Visibility — Expose Minimally
 
 ```rust
