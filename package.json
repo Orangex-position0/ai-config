@@ -1,0 +1,22 @@
+{
+    "name": "@Orangex-position0/ai-config",
+    "version": "0.0.0",
+    "private": true,
+    "description": "Personal AI coding configuration bundle for Claude Code and Codex.",
+    "type": "module",
+    "license": "MIT",
+    "homepage": "https://github.com/Orangex-position0/ai-config",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/Orangex-position0/ai-config.git"
+    },
+    "scripts": {
+        "skills:check": "node scripts/check-skills.mjs",
+        "sources:check": "node scripts/check-sources.mjs",
+        "skills:inventory": "node scripts/inventory-skills.mjs",
+        "validate": "npm run skills:check && npm run sources:check"
+    },
+    "engines": {
+        "node": ">=20"
+    }
+}

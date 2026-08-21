@@ -1,6 +1,6 @@
 ---
 name: github-ops
-description: GitHub repository operations for open-source maintenance: issue triage, PR management, CI status, release checks, and contributor follow-through using the gh CLI. Use when the user wants to manage GitHub issues, PRs, CI, releases, stale items, or any GitHub operational task beyond local git commands.
+description: "GitHub repository operations for open-source maintenance: issue triage, PR management, CI status, release checks, and contributor follow-through using the gh CLI. Use when the user wants to manage GitHub issues, PRs, CI, releases, stale items, or any GitHub operational task beyond local git commands."
 ---
 
 # GitHub Operations

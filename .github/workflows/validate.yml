@@ -1,0 +1,54 @@
+name: Validate
+
+on:
+  pull_request:
+    paths:
+      - "agents/**"
+      - "commands/**"
+      - "rules/**"
+      - "scripts/**"
+      - "skills/**"
+      - "templates/**"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "README.md"
+      - "README.zh-CN.md"
+      - "skills-lock.json"
+      - "package.json"
+      - ".github/workflows/validate.yml"
+  push:
+    branches: ["main"]
+    paths:
+      - "agents/**"
+      - "commands/**"
+      - "rules/**"
+      - "scripts/**"
+      - "skills/**"
+      - "templates/**"
+      - "AGENTS.md"
+      - "CLAUDE.md"
+      - "README.md"
+      - "README.zh-CN.md"
+      - "skills-lock.json"
+      - "package.json"
+      - ".github/workflows/validate.yml"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Validate skills and source ledger
+        run: npm run validate
+
+      - name: Check shell script syntax
+        run: bash -n scripts/*.sh

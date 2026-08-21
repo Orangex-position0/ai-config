@@ -1,110 +1,272 @@
-# Claude Skills 目录
+# Skills
 
-本目录收录 Claude Code 自定义 Skills（技能），按功能领域分类组织。每个 Skill 都是独立的增强包，通过 `SKILL.md` 元数据声明触发条件与工作流，Claude 会在合适时机自动加载。
+本目录是 `ai-config` 的 Skill 集合，用于在 Claude Code、Codex 和其他兼容 `SKILL.md` 的 agent 中复用工作流、领域规则和任务套路。
 
-## 快速索引
+这个目录不是单独的 skill marketplace；它是个人 AI 配置发行版的一部分。这里既包含自建 skill，也包含 vendored 外部 skill。来源与 hash 状态由仓库根目录的 `skills-lock.json` 和 `npm run skills:inventory` 辅助查看。
 
-| 名称 | 一句话描述 |
-|------|-----------|
-| [check](./check/SKILL.md) | 代码审查、PR 检查、发布前关卡 |
-| [health](./health/SKILL.md) | AI 工程配置健康度审计 |
-| [hunt](./hunt/SKILL.md) | 错误根因定位（先诊断后修复） |
-| [learn](./learn/SKILL.md) | 深度研究工作流（六阶段） |
-| [read](./read/SKILL.md) | URL 与 PDF 内容抓取阅读 |
-| [frontend-design](./frontend-design/SKILL.md) | 前端界面/组件/海报设计 |
-| [think](./think/SKILL.md) | 方案设计与决策完整规划 |
-| [adr](./adr/SKILL.md) | 架构决策记录（ADR）的编写与审计 |
-| [write](./write/SKILL.md) | 中英文文案润色、去 AI 味 |
-| [tech-blog-coach](./tech-blog-coach/SKILL.md) | 基于费曼学习法的技术博客教练 |
-| [open-source-readme](./open-source-readme/SKILL.md) | 开源项目 README 创建、重写与审查 |
-| [rust-patterns](./rust-patterns/SKILL.md) | Rust 惯用模式、所有权、错误处理、并发与类型建模 |
-| [rust-testing](./rust-testing/SkILL.md) | Rust 单元测试、集成测试、异步测试与 TDD |
-| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | Tokio 任务生命周期、取消、队列与 shutdown 审查 |
-| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | Rust typestate 候选识别、取舍与最小重构 |
-| [rust-workflow](./rust-workflow/SKILL.md) | Rust 项目初始化、工具链、CI、hooks 与 Cargo 工作流 |
-| [skill-creator](./skill-creator/SKILL.md) | 创建与维护 Skill 的元指南 |
+## 如何使用
 
----
+通常不需要手动加载 Skill。Agent 会根据用户请求和每个 `SKILL.md` 的 frontmatter `description` 自动选择合适的 skill。
 
-## 按领域分类
+也可以在对话中显式点名：
 
-### 1. 代码审查与质量（Code Review & Quality）
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [check](./check/SKILL.md) | review、看看代码、合并前、PR、release、push | 安全门禁、问题清单、修复建议 |
-| [health](./health/SKILL.md) | 检查 Claude/Codex/Pi 配置、健康度、AI 腐化 | 配置审计报告、修复建议 |
-| [hunt](./hunt/SKILL.md) | 排查、报错、崩溃、不工作、回归 | 根因分析报告（先诊断后修复） |
-
-### 2. 学习与研究（Learning & Research）
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [learn](./learn/SKILL.md) | 学习一下、深入研究、整理成文章 | 六阶段研究工作流的可发布成果 |
-| [read](./read/SKILL.md) | 看这个链接、读一下、抓取网页 | 简洁摘要或干净 Markdown |
-
-### 3. 设计与前端（Design & Frontend）
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [frontend-design](./frontend-design/SKILL.md) | 构建网页/组件/海报/landing page | 独具特色的前端代码（避免 AI 模板感） |
-
-### 4. 写作与规划（Writing & Planning）
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [think](./think/SKILL.md) | 出方案、给方案、怎么设计、值不值得 | 决策完整的可执行计划 |
-| [adr](./adr/SKILL.md) | 写 ADR、记录架构决策、审计 ADR | 含 5 要素与生命周期的 ADR 文档 |
-| [write](./write/SKILL.md) | 帮我写、改稿、润色、去 AI 味 | 自然流畅的中英文文案 |
-| [tech-blog-coach](./tech-blog-coach/SKILL.md) | 技术博客写作、笔记转文章 | 五段式结构文章、写作策略 |
-| [open-source-readme](./open-source-readme/SKILL.md) | 创建、重写、审查开源项目 README | 结构清晰、命令真实、可快速上手的 README |
-
-### 5. Rust
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [rust-patterns](./rust-patterns/SKILL.md) | 编写、审查、重构 Rust 代码或设计 crate 结构 | Rust 惯用模式与类型建模建议 |
-| [rust-testing](./rust-testing/SkILL.md) | 编写 Rust 测试、补覆盖率、异步测试、TDD | Rust 测试方案与测试代码 |
-| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | 审查 `tokio::spawn`、任务泄漏、取消、shutdown、bounded queue | Tokio 生命周期审查与重构建议 |
-| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | 识别可改造为 typestate 的 Rust API、builder 或资源生命周期 | typestate 候选表、取舍建议、最小重构 |
-| [rust-workflow](./rust-workflow/SKILL.md) | 初始化或改造 Rust 工具链、CI、hooks、Cargo 配置 | Rust 工作流配置与验证命令 |
-
-### 6. 元工具（Meta Tools）
-
-| Skill | 触发场景 | 输出物 |
-|-------|---------|--------|
-| [skill-creator](./skill-creator/SKILL.md) | 创建新 skill、更新现有 skill | 符合规范的 Skill 包（SKILL.md + 资源） |
-
----
-
-## 使用方式
-
-### 自动触发
-Claude 会在用户消息命中某 Skill 的 `description` / `when_to_use` 关键词时，通过 `Skill` 工具自动加载。例如：
-- 用户说"帮我看看这段代码有没有问题" → 触发 **check**
-- 用户说"学习一下 pandas DataFrame" → 触发 **api-query**
-
-### 显式调用
-在 Claude Code 中输入 `/skill-name` 或在对话中点名：
-```
-/write 帮我润色这段产品介绍
-/hunt 这个报错是什么原因
+```text
+使用 check review 这次改动
+使用 hunt 排查这个回归
+使用 open-source-readme 优化 README
 ```
 
-### 目录结构约定
-每个 Skill 至少包含一个 `SKILL.md`，常见附加资源：
-```
+每个 skill 至少包含：
+
+```text
 skill-name/
-├── SKILL.md           # 必需：技能元数据与工作流
-├── references/        # 可选：参考文档与模板
-├── scripts/           # 可选：辅助脚本
-└── assets/            # 可选：静态资源
+└── SKILL.md
 ```
 
----
+常见扩展目录：
 
-## 维护说明
+```text
+skill-name/
+├── SKILL.md
+├── references/
+├── scripts/
+└── assets/
+```
 
-- 新增 Skill 后，请在「快速索引」与对应分类表中补全条目
-- Skill 描述需与 `SKILL.md` 中 frontmatter 的 `description` 字段保持一致
-- 若 Skill 被废弃或合并，请同步删除本文件中的引用
+## 推荐入口
+
+| 场景 | 优先使用 |
+| --- | --- |
+| 不知道该用哪个 skill | [ask-matt](./ask-matt/SKILL.md) |
+| 代码审查、PR、发布前检查 | [check](./check/SKILL.md), [code-review](./code-review/SKILL.md) |
+| 报错、回归、行为异常 | [hunt](./hunt/SKILL.md), [diagnosing-bugs](./diagnosing-bugs/SKILL.md) |
+| 方案设计、架构取舍、复杂决策 | [think](./think/SKILL.md), [grilling](./grilling/SKILL.md), [codebase-design](./codebase-design/SKILL.md) |
+| 学习、研究、阅读资料 | [learn](./learn/SKILL.md), [research](./research/SKILL.md), [read](./read/SKILL.md) |
+| 前端 UI、可访问性、设计系统 | [ui](./ui/SKILL.md), [frontend-design](./frontend-design/SKILL.md), [frontend-a11y](./frontend-a11y/SKILL.md), [design-system](./design-system/SKILL.md) |
+| 写作、README、变更日志 | [write](./write/SKILL.md), [open-source-readme](./open-source-readme/SKILL.md), [changelog](./changelog/SKILL.md) |
+| 创建或维护 AI 配置资源 | [skill-creator](./skill-creator/SKILL.md), [rule-creator](./rule-creator/SKILL.md), [health](./health/SKILL.md) |
+
+## 按领域索引
+
+### 代码审查与诊断
+
+| Skill | 用途 |
+| --- | --- |
+| [check](./check/SKILL.md) | 代码审查、PR 检查、发布关卡和项目审计。 |
+| [code-review](./code-review/SKILL.md) | 基于分支、commit、tag 或 merge-base 审查代码变更。 |
+| [diagnosing-bugs](./diagnosing-bugs/SKILL.md) | 针对复杂 bug 和性能回归执行诊断循环。 |
+| [hunt](./hunt/SKILL.md) | 先定位根因，再决定修复方式。 |
+| [risk-based-code-review](./risk-based-code-review/SKILL.md) | 为 AI 生成代码或大 diff 准备人工审查清单。 |
+
+### 规划、架构与协作
+
+| Skill | 用途 |
+| --- | --- |
+| [adr](./adr/SKILL.md) | 编写或审计 ADR。 |
+| [codebase-design](./codebase-design/SKILL.md) | 设计深模块、接口边界和可维护结构。 |
+| [codebase-memory](./codebase-memory/SKILL.md) | 使用代码知识图谱做结构化代码查询。 |
+| [domain-modeling](./domain-modeling/SKILL.md) | 梳理领域模型、术语和 ubiquitous language。 |
+| [grill-me](./grill-me/SKILL.md) | 对计划或想法做高强度追问。 |
+| [grill-with-docs](./grill-with-docs/SKILL.md) | 一边追问，一边沉淀 ADR 和 glossary。 |
+| [grilling](./grilling/SKILL.md) | 通用追问工作流。 |
+| [handoff](./handoff/SKILL.md) | 将当前上下文压缩成可交接文档。 |
+| [implement](./implement/SKILL.md) | 根据 spec 或 tickets 执行实现。 |
+| [improve-codebase-architecture](./improve-codebase-architecture/SKILL.md) | 扫描代码库中的架构改进机会。 |
+| [prototype](./prototype/SKILL.md) | 用一次性原型回答设计问题。 |
+| [think](./think/SKILL.md) | 把粗略想法变成决策完整的计划。 |
+| [wayfinder](./wayfinder/SKILL.md) | 为超出单次会话容量的大型工作绘制决策地图。 |
+
+### 研究、阅读与写作
+
+| Skill | 用途 |
+| --- | --- |
+| [changelog](./changelog/SKILL.md) | 创建、维护、审查 CHANGELOG。 |
+| [learn](./learn/SKILL.md) | 六阶段研究工作流。 |
+| [open-source-readme](./open-source-readme/SKILL.md) | 创建、重写或审查开源项目 README。 |
+| [ppp-creator](./ppp-creator/SKILL.md) | 编写 PPP 工作状态更新。 |
+| [read](./read/SKILL.md) | 阅读、摘要、引用 URL 和 PDF。 |
+| [research](./research/SKILL.md) | 面向高可信来源做主题研究。 |
+| [teach](./teach/SKILL.md) | 在当前工作区内教学一个概念或技能。 |
+| [tech-blog-coach](./tech-blog-coach/SKILL.md) | 将技术草稿打磨成 Hugo 博客文章。 |
+| [write](./write/SKILL.md) | 中英文文案改写、润色、去 AI 味。 |
+
+### 前端、设计与 UI
+
+| Skill | 用途 |
+| --- | --- |
+| [accessibility](./accessibility/SKILL.md) | WCAG 2.2 AA 可访问性设计、实现与审计。 |
+| [design-system](./design-system/SKILL.md) | 生成或审计设计系统与视觉一致性。 |
+| [frontend-a11y](./frontend-a11y/SKILL.md) | React / Next.js 可访问性模式。 |
+| [frontend-design](./frontend-design/SKILL.md) | 高质量前端界面、页面和组件设计。 |
+| [frontend-design-direction](./frontend-design-direction/SKILL.md) | 为生产 UI 建立更具体的设计方向。 |
+| [frontend-patterns](./frontend-patterns/SKILL.md) | React / Next.js 前端开发模式。 |
+| [frontend-slides](./frontend-slides/SKILL.md) | 创建动画丰富的 HTML 演示文稿。 |
+| [ui](./ui/SKILL.md) | 生产级 UI、页面、组件和视觉打磨。 |
+| [ui-demo](./ui-demo/SKILL.md) | 用 Playwright 录制 UI demo 视频。 |
+
+### 语言、框架与工程实践
+
+| Skill | 用途 |
+| --- | --- |
+| [agent-friendly-cli](./agent-friendly-cli/SKILL.md) | 设计适合 AI agent 调用的 CLI。 |
+| [api-design](./api-design/SKILL.md) | REST API 设计模式。 |
+| [database-migrations](./database-migrations/SKILL.md) | 数据库迁移、回滚和零停机变更。 |
+| [fastapi-patterns](./fastapi-patterns/SKILL.md) | FastAPI 项目结构、依赖注入、认证和测试。 |
+| [generating-python-installer](./generating-python-installer/SKILL.md) | Windows Python 商业级安装包优化。 |
+| [golang-patterns](./golang-patterns/SKILL.md) | Go 惯用模式与最佳实践。 |
+| [golang-testing](./golang-testing/SKILL.md) | Go 测试、benchmark、fuzzing 和覆盖率。 |
+| [java-coding-standards](./java-coding-standards/SKILL.md) | Java / Spring Boot / Quarkus 编码规范。 |
+| [python-patterns](./python-patterns/SKILL.md) | Python 风格、类型标注和工程实践。 |
+| [python-testing](./python-testing/SKILL.md) | pytest、fixture、mock、参数化和覆盖率。 |
+| [react-native-patterns](./react-native-patterns/SKILL.md) | React Native / Expo 应用模式。 |
+| [react-patterns](./react-patterns/SKILL.md) | React 18/19 组件、hooks、边界和数据模式。 |
+| [react-performance](./react-performance/SKILL.md) | React / Next.js 性能优化。 |
+| [react-testing](./react-testing/SKILL.md) | React Testing Library、Vitest/Jest、MSW 和 a11y 测试。 |
+| [react-ts-project-template](./react-ts-project-template/SKILL.md) | Vite + React + TypeScript SPA 项目模板。 |
+| [rust-newtype-pattern](./rust-newtype-pattern/SKILL.md) | Rust newtype、ID、单位和边界类型建模。 |
+| [rust-patterns](./rust-patterns/SKILL.md) | Rust 所有权、错误处理、trait、并发和惯用模式。 |
+| [rust-testing](./rust-testing/SKILL.md) | Rust 单元测试、集成测试、异步测试和 TDD。 |
+| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | Tokio 任务生命周期、取消、shutdown 和队列审查。 |
+| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | 审计 Rust typestate 候选并设计最小状态模型。 |
+| [rust-workflow](./rust-workflow/SKILL.md) | Rust 工具链、CI、hooks、Cargo 工作流。 |
+| [springboot-patterns](./springboot-patterns/SKILL.md) | Spring Boot 架构、REST、数据访问、缓存和异步处理。 |
+| [springboot-security](./springboot-security/SKILL.md) | Spring Security、校验、CSRF、密钥和限流。 |
+| [springboot-tdd](./springboot-tdd/SKILL.md) | Spring Boot TDD、JUnit、Mockito、MockMvc 和 Testcontainers。 |
+| [springboot-verification](./springboot-verification/SKILL.md) | Spring Boot 构建、静态分析、测试和安全扫描验证。 |
+| [tdd](./tdd/SKILL.md) | 通用测试驱动开发工作流。 |
+
+### 安全、GitHub 与维护
+
+| Skill | 用途 |
+| --- | --- |
+| [github-ops](./github-ops/SKILL.md) | GitHub issue、PR、CI、release 和维护操作。 |
+| [health](./health/SKILL.md) | 审计 AI 配置、hooks、MCP、验证面和可维护性漂移。 |
+| [safety-guard](./safety-guard/SKILL.md) | 防止生产环境或自治 agent 执行破坏性操作。 |
+| [security-review](./security-review/SKILL.md) | 认证、输入、密钥、API 和敏感功能安全审查。 |
+| [security-scan](./security-scan/SKILL.md) | 扫描 Claude 配置中的安全问题。 |
+| [triage](./triage/SKILL.md) | issue 和外部 PR 的 triage 状态机。 |
+
+### 元工具与资源管理
+
+| Skill | 用途 |
+| --- | --- |
+| [ask-matt](./ask-matt/SKILL.md) | 为当前情况选择合适的 skill 或 flow。 |
+| [project-bootstrap](./project-bootstrap/SKILL.md) | 初始化项目骨架和工程规范。 |
+| [rule-creator](./rule-creator/SKILL.md) | 编写和审查 rules 规范文档。 |
+| [setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md) | 初始化 Matt Pocock engineering skills 的配套设置。 |
+| [skill-creator](./skill-creator/SKILL.md) | 创建或维护 Skill。 |
+| [to-spec](./to-spec/SKILL.md) | 将当前对话整理为 spec。 |
+| [to-tickets](./to-tickets/SKILL.md) | 将计划或 spec 拆成可执行 tickets。 |
+| [writing-great-skills](./writing-great-skills/SKILL.md) | 编写和编辑高质量 skill 的参考。 |
+
+## 完整字母索引
+
+| Skill | 简述 |
+| --- | --- |
+| [accessibility](./accessibility/SKILL.md) | Design, implement, and audit inclusive digital products using WCAG 2.2 Level AA |
+| [adr](./adr/SKILL.md) | 编写和审计 ADR（架构决策记录，Architecture Decision Record）。 |
+| [agent-friendly-cli](./agent-friendly-cli/SKILL.md) | 设计对 AI agent 友好的命令行接口。 |
+| [api-design](./api-design/SKILL.md) | REST API design patterns for production APIs. |
+| [ask-matt](./ask-matt/SKILL.md) | Ask which skill or flow fits your situation. |
+| [changelog](./changelog/SKILL.md) | Create, update, review, or release CHANGELOG files. |
+| [check](./check/SKILL.md) | Reviews code diffs, PRs, release readiness, pushes, publishing, and audits. |
+| [code-review](./code-review/SKILL.md) | Review changes since a commit, branch, tag, or merge-base. |
+| [codebase-design](./codebase-design/SKILL.md) | Shared vocabulary for designing deep modules. |
+| [codebase-memory](./codebase-memory/SKILL.md) | Use the codebase knowledge graph for structural code queries. |
+| [database-migrations](./database-migrations/SKILL.md) | Database migration best practices for schema and data changes. |
+| [design-system](./design-system/SKILL.md) | Generate or audit design systems and visual consistency. |
+| [diagnosing-bugs](./diagnosing-bugs/SKILL.md) | Diagnosis loop for hard bugs and performance regressions. |
+| [domain-modeling](./domain-modeling/SKILL.md) | Build and sharpen a project's domain model. |
+| [fastapi-patterns](./fastapi-patterns/SKILL.md) | FastAPI best practices for APIs, services, auth, and tests. |
+| [frontend-a11y](./frontend-a11y/SKILL.md) | Accessibility patterns for React and Next.js. |
+| [frontend-design](./frontend-design/SKILL.md) | Create distinctive, production-grade frontend interfaces. |
+| [frontend-design-direction](./frontend-design-direction/SKILL.md) | Set product-specific frontend design direction. |
+| [frontend-patterns](./frontend-patterns/SKILL.md) | Frontend development patterns for React and Next.js. |
+| [frontend-slides](./frontend-slides/SKILL.md) | Create animation-rich HTML presentations. |
+| [generating-python-installer](./generating-python-installer/SKILL.md) | Commercial-grade Python installer optimization for Windows. |
+| [github-ops](./github-ops/SKILL.md) | GitHub repository operations for open-source maintenance. |
+| [golang-patterns](./golang-patterns/SKILL.md) | Idiomatic Go patterns and conventions. |
+| [golang-testing](./golang-testing/SKILL.md) | Go testing patterns, benchmarks, fuzzing, and coverage. |
+| [grill-me](./grill-me/SKILL.md) | A relentless interview to sharpen a plan or design. |
+| [grill-with-docs](./grill-with-docs/SKILL.md) | A grilling workflow that also creates docs. |
+| [grilling](./grilling/SKILL.md) | Stress-test a plan, decision, or idea through questions. |
+| [handoff](./handoff/SKILL.md) | Compact the current conversation for another agent. |
+| [health](./health/SKILL.md) | Audit AI engineering configuration health. |
+| [hunt](./hunt/SKILL.md) | Find root cause before applying fixes. |
+| [implement](./implement/SKILL.md) | Implement work based on a spec or set of tickets. |
+| [improve-codebase-architecture](./improve-codebase-architecture/SKILL.md) | Find codebase architecture improvement opportunities. |
+| [java-coding-standards](./java-coding-standards/SKILL.md) | Java coding standards for Spring Boot and Quarkus. |
+| [learn](./learn/SKILL.md) | Six-phase research workflow for unfamiliar material. |
+| [open-source-readme](./open-source-readme/SKILL.md) | Create, rewrite, or review README files. |
+| [ppp-creator](./ppp-creator/SKILL.md) | Create concise PPP work status updates. |
+| [project-bootstrap](./project-bootstrap/SKILL.md) | 初始化项目骨架和工程规范。 |
+| [prototype](./prototype/SKILL.md) | Build a throwaway prototype to answer a design question. |
+| [python-patterns](./python-patterns/SKILL.md) | Pythonic idioms, type hints, and best practices. |
+| [python-testing](./python-testing/SKILL.md) | Python testing with pytest, fixtures, mocking, and coverage. |
+| [react-native-patterns](./react-native-patterns/SKILL.md) | React Native and Expo app patterns. |
+| [react-patterns](./react-patterns/SKILL.md) | React 18/19 patterns for components, hooks, and boundaries. |
+| [react-performance](./react-performance/SKILL.md) | React and Next.js performance optimization. |
+| [react-testing](./react-testing/SKILL.md) | React component and hook testing patterns. |
+| [react-ts-project-template](./react-ts-project-template/SKILL.md) | Vite + React + TypeScript SPA project templates. |
+| [read](./read/SKILL.md) | Read, summarize, quote, cite, or convert URLs and PDFs. |
+| [research](./research/SKILL.md) | Research a question against high-trust sources. |
+| [resolving-merge-conflicts](./resolving-merge-conflicts/SKILL.md) | Resolve an in-progress git merge or rebase conflict. |
+| [risk-based-code-review](./risk-based-code-review/SKILL.md) | Prepare human review checklists for risky code. |
+| [rule-creator](./rule-creator/SKILL.md) | 编写和审查 rules 规范文档。 |
+| [rust-newtype-pattern](./rust-newtype-pattern/SKILL.md) | Rust type-safe wrappers and newtype decisions. |
+| [rust-patterns](./rust-patterns/SKILL.md) | Idiomatic Rust patterns and ownership practices. |
+| [rust-testing](./rust-testing/SKILL.md) | Rust unit, integration, async, and property-based testing. |
+| [rust-tokio-practices](./rust-tokio-practices/SKILL.md) | Practical Tokio async conventions. |
+| [rust-typestate-audit](./rust-typestate-audit/SKILL.md) | Audit Rust typestate candidates. |
+| [rust-workflow](./rust-workflow/SKILL.md) | Rust workflow setup and verification. |
+| [safety-guard](./safety-guard/SKILL.md) | Prevent destructive operations in sensitive contexts. |
+| [security-review](./security-review/SKILL.md) | Security checklist and patterns for sensitive features. |
+| [security-scan](./security-scan/SKILL.md) | Scan Claude configuration for security issues. |
+| [setup-matt-pocock-skills](./setup-matt-pocock-skills/SKILL.md) | Configure companion setup for Matt Pocock engineering skills. |
+| [skill-creator](./skill-creator/SKILL.md) | Guide for creating effective skills. |
+| [springboot-patterns](./springboot-patterns/SKILL.md) | Spring Boot architecture and REST patterns. |
+| [springboot-security](./springboot-security/SKILL.md) | Spring Security best practices. |
+| [springboot-tdd](./springboot-tdd/SKILL.md) | TDD for Spring Boot. |
+| [springboot-verification](./springboot-verification/SKILL.md) | Verification loop for Spring Boot projects. |
+| [tdd](./tdd/SKILL.md) | Test-driven development workflow. |
+| [teach](./teach/SKILL.md) | Teach a new skill or concept. |
+| [tech-blog-coach](./tech-blog-coach/SKILL.md) | Turn technical notes into a Hugo blog article. |
+| [think](./think/SKILL.md) | Turn rough ideas into decision-complete plans. |
+| [to-spec](./to-spec/SKILL.md) | Turn the current conversation into a spec. |
+| [to-tickets](./to-tickets/SKILL.md) | Break a plan or spec into tickets. |
+| [triage](./triage/SKILL.md) | Triage issues and external PRs. |
+| [ui](./ui/SKILL.md) | Production-grade UI and visual polish. |
+| [ui-demo](./ui-demo/SKILL.md) | Record polished UI demo videos with Playwright. |
+| [wayfinder](./wayfinder/SKILL.md) | Plan large work as a shared decision map. |
+| [write](./write/SKILL.md) | Rewrite and polish Chinese or English prose. |
+| [writing-great-skills](./writing-great-skills/SKILL.md) | Reference for writing and editing skills well. |
+
+## 维护命令
+
+在仓库根目录运行：
+
+```bash
+npm run skills:check
+npm run sources:check
+npm run skills:inventory
+npm run validate
+```
+
+这些命令分别用于：
+
+- `skills:check`：检查每个 skill 的 `SKILL.md`、frontmatter 和 README 链接。
+- `sources:check`：检查 `skills-lock.json` 中已记录来源的结构和 hash。
+- `skills:inventory`：输出当前 skill 清单、来源类型和 hash 状态。
+- `validate`：运行仓库内的默认质量检查。
+
+新增或删除 skill 后，请至少运行：
+
+```bash
+npm run skills:check
+```
+
+如果新增的是外部 vendored skill，再更新 `skills-lock.json` 并运行：
+
+```bash
+npm run sources:check
+```
