@@ -1,7 +1,7 @@
 # Rust 栈
 
-> 锚点最后验证日期：2026-07-20
-> 本文件只持有「委托边界 + rules 锚点」。Rust 工具链、hooks、CI 与 Cargo 项目结构一律委托 `$rust-workflow`。
+> 维护说明：rules 章节名变化时，同步更新本文件的 Rule key 与使用锚点。
+> 本文件只持有「委托边界 + rules 指针」。Rust 工具链、hooks、CI 与 Cargo 项目结构一律委托 `$rust-workflow`。
 
 ## 委托边界
 
@@ -25,14 +25,24 @@
 
 其余 Rust 策略由 `$rust-workflow` 按目标项目文件自动检测；只有当选择会改变项目策略、增加 CI 成本、需要全局或网络安装、或无法从仓库推断时再问用户。
 
-## rules 锚点
+## rules 指针
 
-| 用途 | rules 源 | 章节 |
+`<rules>` 由 `project-bootstrap` 定义为当前宿主的 rules 根目录。先解析下列 rule key，再按「使用锚点」读取对应章节。
+
+| Rule key | 文件 |
+|---|---|
+| `rust-workflow` | `<rules>/rust/rust-workflow-standards.md` |
+| `rust-conventions` | `<rules>/rust/rust-conventions.md` |
+| `conventional-commit` | `<rules>/common/conventional-commit.md` |
+
+## 使用锚点
+
+| 用途 | Rule key | 章节 |
 |---|---|---|
-| Git hooks 框架与配置 | `~/.claude/rules/rust/rust-workflow-standards.md` | Git Hooks |
-| 代码质量命令（fmt/clippy/todo） | 同上 | Verification Baseline |
-| 测试命令（nextest） | 同上 | Verification Baseline |
-| 项目配置（toolchain/release/Cargo.lock） | 同上 | Project Configuration / Release Profile |
-| Workspace 与 MSRV | 同上 | Project Configuration |
-| 编码规范 | `~/.claude/rules/rust/rust-conventions.md` | 全文 |
-| commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
+| Git hooks 框架与配置 | `rust-workflow` | Git Hooks |
+| 代码质量命令（fmt/clippy/todo） | `rust-workflow` | Verification Baseline |
+| 测试命令（nextest） | `rust-workflow` | Verification Baseline |
+| 项目配置（toolchain/release/Cargo.lock） | `rust-workflow` | Project Configuration / Release Profile |
+| Workspace 与 MSRV | `rust-workflow` | Project Configuration |
+| 编码规范 | `rust-conventions` | 全文 |
+| commit 规范 | `conventional-commit` | 项目特定约定 |

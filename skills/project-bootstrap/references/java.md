@@ -1,17 +1,28 @@
 # Java / Spring Boot 栈
 
-> 锚点最后验证日期：2026-07-20
-> 本文件只持有「rules 锚点 + 少量增量」，模板内容一律去 rules 读原文。
+> 维护说明：rules 章节名变化时，同步更新本文件的 Rule key 与使用锚点。
+> 本文件只持有「rules 指针 + 少量增量」，模板内容一律去 rules 读原文。
 
-## rules 锚点
+## rules 指针
 
-| 用途 | rules 源 | 章节 |
+`<rules>` 由 `project-bootstrap` 定义为当前宿主的 rules 根目录。先解析下列 rule key，再按「使用锚点」读取对应章节。
+
+| Rule key | 文件 |
+|---|---|
+| `java-workflow` | `<rules>/java/java-workflow-standards.md` |
+| `ddd-architecture` | `<rules>/ddd-architecture.md` |
+| `java-coding` | `<rules>/java/java-coding-standards.md` |
+| `conventional-commit` | `<rules>/common/conventional-commit.md` |
+
+## 使用锚点
+
+| 用途 | Rule key | 章节 |
 |---|---|---|
-| lefthook.yml 完整配置 | `~/.claude/rules/java/java-workflow-standards.md` | §3.3 参考配置 |
-| 工具链选型与节奏 | 同上 | §1.1 职责一览 + §2 本地命令节奏 |
-| DDD 分层目录结构 | `~/.claude/rules/ddd-architecture.md` | 「分层架构实现」 |
-| Java 编码 HARD RULE | `~/.claude/rules/java/java-coding-standards.md` | 全文 |
-| commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
+| lefthook.yml 完整配置 | `java-workflow` | §3.3 参考配置 |
+| 工具链选型与节奏 | `java-workflow` | §1.1 职责一览 + §2 本地命令节奏 |
+| DDD 分层目录结构 | `ddd-architecture` | 「分层架构实现」 |
+| Java 编码 HARD RULE | `java-coding` | 全文 |
+| commit 规范 | `conventional-commit` | 项目特定约定 |
 
 ## lefthook.yml（物化指令）
 

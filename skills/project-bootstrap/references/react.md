@@ -1,6 +1,6 @@
 # React + TypeScript 栈（Vite SPA）
 
-> 锚点最后验证日期：2026-07-20
+> 维护说明：rules 章节名变化时，同步更新本文件的 Rule key 与使用锚点。
 > 本文件只持有「委托边界 + hooks 增量」。项目结构、路由布局、feature 边界和 ESLint 架构边界检查委托 `$react-ts-project-template`；lefthook 命令仍是本 skill 的增量知识。
 
 ## 委托边界
@@ -14,14 +14,23 @@
 
 `project-bootstrap` 不再自行创建 React `src/` 目录骨架，也不自行决定 `src/pages` + `src/app/router` 与 `src/routes` 的路由布局。
 
-## rules 锚点
+## rules 指针
 
-| 用途 | rules 源 | 章节 |
+`<rules>` 由 `project-bootstrap` 定义为当前宿主的 rules 根目录。先解析下列 rule key，再按「使用锚点」读取对应章节。
+
+| Rule key | 文件 |
+|---|---|
+| `react-structure` | `<rules>/react-ts-project-structure.md` |
+| `conventional-commit` | `<rules>/common/conventional-commit.md` |
+
+## 使用锚点
+
+| 用途 | Rule key | 章节 |
 |---|---|---|
-| src/ 目录骨架 | `~/.claude/rules/react-ts-project-structure.md` | §2.1 目录骨架必须存在 |
-| feature 内部 segment | 同上 | §3.1 feature 内部 segment 划分 |
-| TS 编译基线与类型组织 | 同上 | §2.6 TypeScript 规范 |
-| commit 规范 | `~/.claude/rules/conventional-commit.md` | 项目特定约定 |
+| src/ 目录骨架 | `react-structure` | §2.1 目录骨架必须存在 |
+| feature 内部 segment | `react-structure` | §3.1 feature 内部 segment 划分 |
+| TS 编译基线与类型组织 | `react-structure` | §2.6 TypeScript 规范 |
+| commit 规范 | `conventional-commit` | 项目特定约定 |
 
 TS 编译基线与 `react-ts-project-template/references/project-structure.md` 的 TypeScript Baseline 保持一致：至少启用 `strict: true`，新项目推荐同时启用 `noUncheckedIndexedAccess: true` 与 `exactOptionalPropertyTypes: true`。
 
