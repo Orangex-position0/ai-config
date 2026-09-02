@@ -11,7 +11,7 @@ Prefix your first line with 🥷 inline, not as its own paragraph.
 
 > Note: `/review` is a built-in Anthropic plugin command for PR review. Waza uses `/check` (or the alias `code-review`) instead. Do not re-trigger `/review` from within this skill.
 
-Read the diff, find the problems, fix what can be fixed safely, ask about the rest. Done means verification ran in this session and passed.
+Read the diff and find the problems. Review, audit, triage, and readiness requests are report-only; apply fixes only when the current turn explicitly asks to fix, change, implement, or optimize. Done means the requested review surface is covered and every verification claim comes from this session.
 
 ## Outcome Contract
 
@@ -19,6 +19,7 @@ Read the diff, find the problems, fix what can be fixed safely, ask about the re
 - Done when: findings, fixes, shipped state, or blockers are stated with the commands, artifacts, or remote state that prove them.
 - Evidence: worktree status, diff, public project docs, manifests, CI, package contents, release or registry state, and current command output.
 - Output: concise findings first, then verification and shipped-state summary when applicable. Multi-step or ship-action runs close with a completion ledger (done / not applicable / remaining), never a narrative that leaves the user asking "is everything done".
+- Authorization: read-only intent may inspect the worktree and remote state but may not edit files, apply autofixes, commit, push, publish, comment, close, merge, or change branches. Each write or public action needs current-turn authorization, except when the user explicitly authorizes a named batch that contains it.
 
 ## Worktree Safety Preflight
 
@@ -93,7 +94,16 @@ When the project's `AGENTS.md` or the current thread explicitly asks to "commit 
 
 ## Get the Diff
 
-Get the full diff between the current branch and the base branch. If already on the base branch, ask which commits to review.
+Derive the review baseline from the user's words and current repository state. Do not ask for commits when the scope is already inferable:
+
+- **All local or uncommitted changes**: inventory staged, unstaged, and untracked files, plus local commits ahead of the configured upstream. Being on the base branch does not make this scope ambiguous.
+- **PR or branch review**: use the merge base through the reviewed head, then add any dirty files in that checkout as a separate surface.
+- **Since the last release**: use the latest published stable tag through `HEAD`, not the local version field, then add dirty files.
+- **Recent N days or an explicit ref**: resolve that time/ref boundary through `HEAD`, then add dirty files.
+- **Known-good or previous working version**: compare that ref through `HEAD`; route to `/hunt` Bisect Mode only when the regression point itself is unknown.
+- **Whole-project audit**: use Audit Mode rather than pretending one diff is the repository.
+
+Freeze the resolved base, `HEAD`, worktree inventory, generated/distribution surfaces, and delegated scopes before review. Ask one narrow question only when two plausible baselines would materially change the verdict. If review fixes are applied or repository state moves, the old verdict expires: re-read `HEAD`, status, and the full resolved diff before signing off.
 
 ## Scope
 
@@ -107,6 +117,8 @@ Measure the diff and classify depth:
 
 State the depth before proceeding.
 
+Explicit depth language overrides the size thresholds. "All", "全部", "deep", "深入", or "仔细" means whole-scope coverage of the resolved inventory, even when the textual diff is small; it does not permit skipping untracked files, generated mirrors, required artifacts, or pending reviewers.
+
 Static content diffs can stay quick even when they touch several generated files: version strings, dates, release-copy mirrors, sitemap dates, or one-for-one localization copy changes usually need line-by-line readback plus grep consistency, not a specialist fleet. Escalate only when the diff changes logic, generation rules, public distribution behavior, or user-facing semantics beyond the literal text replacement.
 
 ## Did We Build What Was Asked?
@@ -114,6 +126,8 @@ Static content diffs can stay quick even when they touch several generated files
 Before reading code, check scope drift: do the diff and the stated goal match? Label: **on target** / **drift** / **incomplete**.
 
 Also check surgical traceability: every changed file and every new public surface must trace back to the user's stated goal. If a file, dependency, config knob, abstraction, generated artifact, workflow permission, or release behavior cannot be explained in one sentence from the request, label it drift until proven necessary.
+
+For every new public setting, flag, environment variable, command, or service, ask who will change it and why one correct default cannot serve them. If there is no evidenced user split, treat the knob as scope drift and fix the default path instead.
 
 Drift signals (examples, not exhaustive -- any one is enough to label drift):
 - A changed file has no connection to the stated goal
@@ -127,11 +141,7 @@ Drift signals (examples, not exhaustive -- any one is enough to label drift):
 
 When the diff fixes one instance of a class-of-bug (a missing validation, a wrong selector, an off-by-one, a missing lock), the same shape often lives elsewhere. Extract the pattern signature, `grep -rn` it across the repo (exclude generated dirs), and confirm sibling instances were also handled. List any unswept sibling: flag it as a hard stop when it carries the same risk, advisory when lower-risk. For a deeper sweep playbook, see hunt's Scope Blast Mode.
 
-## Testability Seam For Recurring Bugs
-
-When the diff fixes a visual, layout, timing, or stateful-UI bug that has recurred (the same area broke before, or the fix reads as "tune a number until it looks right"), a code change alone will let the regression return: the logic is entangled with mutable render or UI state, so there is nowhere to assert on it. Flag the fix as incomplete unless it pulls the decision into a pure function -- inputs in, value out, no mutable receiver -- and unit-tests the invariant that was violated (a width never collapses to zero, a hit region stays half-open, an offset stays in bounds). "Verified by running the app" confirms this one instance; only a pinned invariant stops the next one. Reserve this for classes that recur or that runtime checks cannot see; do not demand a seam for one-off logic that already has straightforward coverage. If no honest seam exists -- the only place to assert is past a shallow interface that never exercises the real failure at the call site -- do not fake a hollow test to satisfy the gate. Record "no correct test seam" as an architectural finding and surface it: the missing seam is the actual defect.
-
-A pure function is the right seam when the bug is one wrong decision. It is the wrong seam when the bug is "a future call site will bypass this": a guard hoisted into a shared helper still only protects the callers that route through it, and the next contributor adds the eleventh call site without it. For that class, the guard that holds is a test that asserts on the source tree itself -- enumerate the call sites of the risky primitive and fail on any that skips the wrapper, or fail on any new occurrence of the raw pattern outside an explicit allowlist. It runs in the normal suite, needs no runtime, and turns "someone must remember" into a failing build. Reserve it for primitives where forgetting is silent and costly (unbounded external commands, direct deletion, raw privilege escalation), and keep the allowlist in the test so each exemption is a reviewed line.
+When the diff contains a recurring or hard-to-observe bug, output-string branching, guessed waits, consolidation or dead-code deletion, history-sensitive restoration, broad destructive matchers, duplicated derivations, test-only seams, never-shipped migrations, or unknown identifiers, load the matching section of `references/review-patterns.md`. Do not load that catalog for unrelated diffs.
 
 ## CLI Command Surface
 
@@ -148,25 +158,17 @@ When a diff touches a skill, plugin, marketplace entry, installer, package allow
 Examples, not exhaustive -- flag any diff that could cause irreversible harm if merged unreviewed.
 
 - **No unverified claims.** Do not write "I verified X", "I ran Y", "tests pass", or "this fixes Z" unless the shell output is in this turn's transcript. If you reason about behavior without running, say "based on reading the code" instead of "I verified". Every verification claim in the sign-off must point to a command that actually ran in this session.
-- **Re-read before citing source-of-truth facts.** Before writing a line number, dirty-file count, branch ahead/behind state, fallback behavior, locale coverage, or release artifact state into a handoff or review report, re-read the source in this turn (`git status`, `git diff`, file `Read`, `rg`, command output). Earlier chat context, prior agent notes, and your own recall are stale by default. Cite the verification path inline (`per current Read of <file>` / `per git status this turn`) so reviewers know which facts are anchored.
-- **String-matching on captured output**: when a diff branches on or greps an error message or command output, probe what that string actually holds at runtime before approving. A subprocess spawned with `stdio: 'inherit'` (or any uncaptured pipe) leaves diagnostics on the terminal and `error.message` holding only the command line, so the matcher silently matches the command, not the output. Prefer a structured fact the caller already holds (exit code, build target) over re-parsing a string.
-- **Magic-wait coupling**: a fixed `sleep`, `asyncAfter`, `setTimeout`, or "should be enough" timeout standing in for an unobserved async completion, or an animation, poll, or progress step tied to a frame count or fixed duration rather than wall-clock state. It passes on the author's machine and breaks on a slow CPU, a 120Hz display, or a proxied network. Flag it: drive the next step off the real completion signal (callback, navigation-done, frame-changed, state flag), and keep timing machine- and frame-rate-independent.
+- **Re-read source-of-truth facts.** Refresh line numbers, worktree state, fallback behavior, locale coverage, and artifact state in the current turn before citing them. Earlier context and reviewer notes are leads, not evidence.
 - **Destructive auto-execution**: any task marked "safe" or "auto-run" that modifies user-visible state (history files, config, preferences, installed software) must require explicit confirmation.
 - **Source and distribution out of sync**: everything the source change implies downstream must be regenerated, tracked, uploaded, and version-consistent before declaring done: generated or bundled outputs rebuilt and included, every artifact named in release notes or workflows actually uploaded, every new helper module, reference file, or script present in the built archive, and version fields synchronized across manifests, package metadata, changelogs, tags, and lockfiles.
 - **Verifier failure layer unclear**: if a verifier fails before assertions or due to missing optional dependencies, bootstrap noise, transient build-service crashes, unavailable simulators, or tool setup, classify setup versus product failure. Retry only with new evidence or a narrower environment. Do not call the repo broken until the intended test body or artifact check actually ran. The inverse is the same stop: a verifier that passes without running the real path -- a skipped optional-dependency job that still prints OK, a function that early-returns leaving output empty so a true-on-empty assertion passes, a render reported fixed but never opened -- is a hollow green. A pass counts only when at least one non-skipped, non-empty case exercised the path and the assertions fail on emptiness.
-- **Manifest-only install proof**: if a diff changes a skill, plugin, installer, marketplace entry, package wrapper, or installable archive, metadata and source tests are not enough. Build or install through the real user path in an isolated environment, or mark the install/runtime layer unverified.
-- **Unknown identifiers in diff**: any function, variable, or type introduced in the diff that does not exist in the codebase is a hard stop. Grep before writing or approving any reference: `grep -r "name" .` -- no results outside the diff = does not exist.
-- **Consolidation pass with no over-deletion audit**: a diff whose stated purpose is simplifying, consolidating, or trimming prose (rules, skills, docs, guidance) gets its deletions read back as a diff, each classified as folded-into-X, redundant-with-Y, or behavior-removed. Behavior-removed entries are listed for the maintainer, never absorbed into a "simplified" summary line. Deletion volume is not evidence of a good pass, and the pruning rules that drive these diffs have no symmetric counterweight of their own, so the audit has to come from review.
-- **Dead-code or YAGNI deletion without proof**: any "zero callers" or "unused" claim must be checked across the whole repository, including top-level entrypoints, docs, tests, generated dispatch tables, scripts, CI, package allowlists, package manifests, and dynamic lookup patterns. Treat sub-agent or tool reports as leads, not proof. Before deleting, batch-grep all candidates, classify test-only references separately from production/runtime references, and chase written variables or data tables that may become orphaned together. If a file is only wrongly exposed through a package, archive, or plugin mirror, tighten that distribution surface and its test instead of deleting the dev tool. If the grep scope is partial, do not delete.
+- **Publishing over your own open findings**: when the same run produced review findings and then reaches a ship action, every finding must be fixed, or restated as "known, shipping anyway" with its user impact and confirmed, before the release proceeds. A standing release authorization does not cover problems discovered after it was given.
 - **Injection and validation**: SQL, command, path injection at system entry points. Credentials hardcoded, logged, committed, or copied into public docs.
 - **Dependency changes**: unexpected additions or version bumps in package.json, Cargo.toml, go.mod, requirements.txt. Flag any new dependency not obviously required by the diff. The inverse is a finding too: a declared dependency or linked SDK with zero imports across the repo gets flagged to the maintainer, not silently removed (it may be staged for an upcoming feature, and unused analytics/telemetry SDKs still drag app review and privacy manifests). Removal needs the maintainer's go-ahead in the current turn, a grep proving zero references first, and a full build after.
+  - **Verify a lockfile by regenerating it, not by reading it.** For any PR that edits a lockfile, run the package manager's own update command for that one package in a clean worktree off the PR's base (`pnpm update <pkg> --lockfile-only`, `cargo update -p <pkg> --precise <v>`, `npm install <pkg>@<v> --package-lock-only`) and diff your result against theirs. Byte-identical means a real tool produced it; any divergence means it was hand-edited or resolved elsewhere, and the manifest and lockfile may now disagree in ways `--frozen-lockfile` / `--locked` will reject at release time. This cuts both ways: it is the only cheap way to clear a suspicious-looking hunk you would otherwise reject, and it catches contradictions that reading the diff cannot, such as a bumped dependency whose override still pins the old range.
+  - Automated security PRs get two extra checks their scanner does not do. First, whole-file reserialization: bots that rewrite a manifest can silently escape non-ASCII (emoji, CJK) or reorder keys, so diff the manifest against base in full rather than only the version line. Second, reachability: confirm the package is actually built into the shipped artifact (`cargo tree -i <pkg> --target all`, or the equivalent import/feature check) before repeating the advisory's severity, since an inert lockfile entry is not a live vulnerability in this project.
+  - When a version pin exists, find out why before moving anything near it: `git log -S'<pinned-name>' -- <manifest>` usually names the bug it was added for. A bump that satisfies the advisory but leaves a companion pin at its old version can be worse than not bumping at all.
 - **Safety sinks**: destructive file operations, shell or AppleScript construction, cwd/path/symlink traversal, approval or sandbox boundary changes, signing/appcast flows, and auth prompts need explicit review of validation, rollback, and user-confirmation behavior.
-- **Audit before restore**: when the diff re-adds a symbol, string, asset, or config field that recent history removed, grep the rest of the diff and the main branch to confirm anything still uses it. A rule file that names the symbol is not proof of life. If only a parity test references it, the rule is stale and the restore is wrong; reject the restore and flag the stale rule. Specifically suspicious: re-adding an enum case, xcstrings entry, dictionary key, or asset file that the prior commit deleted intentionally.
-- **Intentional-divergence normalized**: a surface that deliberately breaks a house pattern -- omits a shared step, takes a conditional path the siblings avoid, leaves an asymmetry -- to dodge a known defect, then a later cleanup pass "tidies" it back into uniformity and reintroduces the bug. Before unifying an outlier to match its siblings, read the comment or commit that created it and confirm the defect it prevents survives your change.
-- **Broad matchers in destructive sinks**: any diff that adds recursion, mass-delete, traversal, ID-prefix wildcards, or fallback regex branches feeding a destructive sink gets a line-by-line review of three things: matcher breadth in every branch (fallback paths often regress to broad globs), protected-path coverage for the new entry point, and any bypassed user-confirmation step. Gate on the shape, not the author: the most expensive instances are written by maintainers who know the codebase, where a deletion target is built by string-composing a display name, a vendor prefix, or a user-supplied label into a path, and a neighbour that merely shares that token gets removed too. Ask what the narrowest evidence authorizing this delete is; an exact identifier or an exact path passes, a prefix or a common word does not. Raise the bar further when the PR is plausibly AI-generated, and do not approve "this looks fine." Where the guard lives matters as much as its breadth: a check placed at the call site protects only that caller, so prefer it inside the deletion primitive itself.
-- **Two derivations of one value**: the same classification, ordering, threshold, count, or eligibility rule computed independently in two places (a summary and the list it summarizes, ordering and the control it orders, a score and the diagnosis text beside it, a preview count and the executor's predicate). They agree the day they are written and drift on the first change to either. When a diff adds a second derivation, require one source of truth: hoist the rule into a shared constant or pure function and have both sides read it. When a diff changes one side of an existing pair, grep for the other side and confirm it moved too. A user-visible disagreement between two numbers that describe the same thing is the symptom this prevents.
-- **Test asserts on a surface production never runs**: a test that pins a helper no call path reaches, or asserts the literal source shape of a command or config string, stays green while the shipped path is broken and blocks the correct fix by pinning the broken form as correct. Related to hollow green above, but the inverse failure: there the verifier skipped the real path, here it exercises a path that is not the real one. When reviewing a test added alongside a fix, ask whether it would fail on the unfixed code and whether the entry point it asserts on is the one users reach. If the answer to either is no, the test is a finding, not coverage.
-- **Migration code for features that did not ship before**: reject migration scaffolding, version-gated defaults, or "carry old key forward" logic when the underlying preference / schema / feature was introduced in this same release. `git show v<last-release>:<path>` is the gate: if the key is absent from the last tag, no migration is needed; ship the default. Migration code added for a never-shipped key is dead-on-arrival complexity.
 
 ## Finding Quality Gate
 
@@ -217,16 +219,20 @@ Merge findings: when two specialists flag the same code location, keep the highe
 
 Every specialist finding is a claim to verify, not a fact to act on. For HIGH and CRITICAL claims, when the agent facility allows it, spawn one independent skeptic per finding whose only brief is to refute it against the actual code; a finding the skeptic refutes on direct read is dropped or downgraded regardless of which persona raised it. Without the facility, run the skeptic pass yourself: re-read the cited code this turn and confirm the claim is real and live, not already handled elsewhere, not consistent-by-design, not a latent-only risk labeled as a live bug. Parallel reviewers over-report from name-based inference and partial context; drop what dissolves on direct read, and cite the verification path before routing anything to Autofix or sign-off.
 
+Before a whole-scope verdict, reconcile a completion ledger for every delegated review: assigned scope, returned status, and uncovered remainder. Wait for every active reviewer, or name its scope as unreviewed. Never say "all read", "full audit complete", or "no issues" while any reviewer or required verification is still pending.
+
 ## Autofix Routing
 
 | Class | Definition | Action |
 |-------|------------|--------|
-| `safe_auto` | Unambiguous, risk-free: typos, missing imports, style inconsistencies | Apply immediately |
+| `safe_auto` | Unambiguous, risk-free: typos, missing imports, style inconsistencies | Apply only after explicit write authorization; otherwise report it |
 | `gated_auto` | Likely correct but changes behavior: null checks, error handling additions | Batch into one user confirmation block |
 | `manual` | Requires judgment: architecture, behavior changes, security tradeoffs | Present in sign-off |
 | `advisory` | Informational only | Note in sign-off |
 
-Apply all `safe_auto` fixes before surfacing the `gated_auto` confirmation block.
+After explicit write authorization, apply `safe_auto` fixes before surfacing the `gated_auto` confirmation block. In report-only mode, do not modify the worktree.
+
+Any fix made during review invalidates the pre-fix verdict. Re-freeze the baseline, re-run the check that exposed the finding, refresh the sibling sweep, and complete the final adversarial pass required by the review depth before declaring ready.
 
 ## Adversarial Pass (Deep only)
 
@@ -271,6 +277,7 @@ Open the final message with the `status` line as plain prose before any table or
 status:           [committed and pushed as <hash> / staged, not committed / released vX.Y.Z / blocked on <what>]
 files changed:    N (+X -Y)
 scope:            on target / drift: [what]
+user-visible delta: none / [entry, UI, copy, behavior added, removed, or changed]
 review depth:     quick / standard / deep
 hard stops:       N found, N fixed, N deferred
 sibling sweep:    N same-shape sites checked, N fixed / none found / not applicable
@@ -282,3 +289,5 @@ verification:     [command] -> pass / fail
 ```
 
 `public actions` lists every outward-facing step the task implied (issue replies, closures, release reactions) with its done or pending state; an external action the user has to ask about was not finished.
+
+For a whole-scope or post-fix verdict, `scope` is backed by the frozen baseline and current inventory, not by the last patch viewed. For a ship action, the status line is incomplete until every currently authorized ledger item is `done`, `not applicable`, or `blocked` with evidence.
