@@ -44,6 +44,7 @@ skill-name/
 | 学习、研究、阅读资料 | [learn](./learn/SKILL.md), [research](./research/SKILL.md), [read](./read/SKILL.md) |
 | 前端 UI、可访问性、设计系统 | [ui](./ui/SKILL.md), [frontend-design](./frontend-design/SKILL.md), [frontend-a11y](./frontend-a11y/SKILL.md), [design-system](./design-system/SKILL.md) |
 | 写作、README、变更日志 | [write](./write/SKILL.md), [open-source-readme](./open-source-readme/SKILL.md), [changelog](./changelog/SKILL.md) |
+| 中文求职、简历、面试、投递 | [asu](./asu/SKILL.md), [asu-recap](./asu-recap/SKILL.md), [project-guide](./project-guide/SKILL.md), [make-resume](./make-resume/SKILL.md), [asu-resume](./asu-resume/SKILL.md), [job-apply](./job-apply/SKILL.md), [interview](./interview/SKILL.md), [offer](./offer/SKILL.md), [contributor](./contributor/SKILL.md) |
 | 创建或维护 AI 配置资源 | [skill-creator](./skill-creator/SKILL.md), [rule-creator](./rule-creator/SKILL.md), [health](./health/SKILL.md) |
 
 ## 按领域索引
@@ -89,6 +90,20 @@ skill-name/
 | [teach](./teach/SKILL.md) | 在当前工作区内教学一个概念或技能。 |
 | [tech-blog-coach](./tech-blog-coach/SKILL.md) | 将技术草稿打磨成 Hugo 博客文章。 |
 | [write](./write/SKILL.md) | 中英文文案改写、润色、去 AI 味。 |
+
+### 中文求职工作流
+
+| Skill | 用途 |
+| --- | --- |
+| [asu](./asu/SKILL.md) | 根据目标岗位酥化真实经历、项目要点和 HR 开场白。 |
+| [asu-recap](./asu-recap/SKILL.md) | 按阿酥方式复盘 AI 编程对话、项目交付记录和落地证据。 |
+| [asu-resume](./asu-resume/SKILL.md) | 复刻 ASu 单栏高密度技术简历并生成可编辑 HTML/PDF。 |
+| [contributor](./contributor/SKILL.md) | 寻找和准备真实开源贡献候选，经确认后提交 PR。 |
+| [interview](./interview/SKILL.md) | 根据简历和 JD 预测面试问题，并逐层追问掌握度。 |
+| [job-apply](./job-apply/SKILL.md) | 读取用户确认的简历资料，辅助填写招聘网站申请表并核对结果。 |
+| [make-resume](./make-resume/SKILL.md) | 制作或复刻中文可编辑 HTML 简历并辅助导出 PDF。 |
+| [offer](./offer/SKILL.md) | 管理秋招投递、测评、面试、Offer 和拒信进度。 |
+| [project-guide](./project-guide/SKILL.md) | 基于项目材料生成项目导学、项目面经和可交接事实摘要。 |
 
 ### 前端、设计与 UI
 
@@ -157,7 +172,7 @@ skill-name/
 | [skill-creator](./skill-creator/SKILL.md) | 创建或维护 Skill。 |
 | [to-spec](./to-spec/SKILL.md) | 将当前对话整理为 spec。 |
 | [to-tickets](./to-tickets/SKILL.md) | 将计划或 spec 拆成可执行 tickets。 |
-| [writing-great-skills](./writing-great-skills/SKILL.md) | 编写和编辑高质量 skill 的参考。 |
+| [writing-for-agents](./writing-for-agents/SKILL.md) | 编写 agent 可消费文档、skill 和 AGENTS/CLAUDE 指令的参考。 |
 
 ## 完整字母索引
 
@@ -168,11 +183,15 @@ skill-name/
 | [agent-friendly-cli](./agent-friendly-cli/SKILL.md) | 设计对 AI agent 友好的命令行接口。 |
 | [api-design](./api-design/SKILL.md) | REST API design patterns for production APIs. |
 | [ask-matt](./ask-matt/SKILL.md) | Ask which skill or flow fits your situation. |
+| [asu](./asu/SKILL.md) | 中文求职经历酥化和 HR 开场白。 |
+| [asu-recap](./asu-recap/SKILL.md) | 阿酥方式复盘 AI 编程对话和项目交付证据。 |
+| [asu-resume](./asu-resume/SKILL.md) | ASu 同款高密度技术简历制作。 |
 | [changelog](./changelog/SKILL.md) | Create, update, review, or release CHANGELOG files. |
 | [check](./check/SKILL.md) | Reviews code diffs, PRs, release readiness, pushes, publishing, and audits. |
 | [code-review](./code-review/SKILL.md) | Review changes since a commit, branch, tag, or merge-base. |
 | [codebase-design](./codebase-design/SKILL.md) | Shared vocabulary for designing deep modules. |
 | [codebase-memory](./codebase-memory/SKILL.md) | Use the codebase knowledge graph for structural code queries. |
+| [contributor](./contributor/SKILL.md) | 中文求职场景下的开源贡献辅助。 |
 | [database-migrations](./database-migrations/SKILL.md) | Database migration best practices for schema and data changes. |
 | [design-system](./design-system/SKILL.md) | Generate or audit design systems and visual consistency. |
 | [diagnosing-bugs](./diagnosing-bugs/SKILL.md) | Diagnosis loop for hard bugs and performance regressions. |
@@ -195,11 +214,16 @@ skill-name/
 | [hunt](./hunt/SKILL.md) | Find root cause before applying fixes. |
 | [implement](./implement/SKILL.md) | Implement work based on a spec or set of tickets. |
 | [improve-codebase-architecture](./improve-codebase-architecture/SKILL.md) | Find codebase architecture improvement opportunities. |
+| [interview](./interview/SKILL.md) | 简历驱动的面试预测与连续追问。 |
 | [java-coding-standards](./java-coding-standards/SKILL.md) | Java coding standards for Spring Boot and Quarkus. |
+| [job-apply](./job-apply/SKILL.md) | 中文求职申请表自动填写辅助。 |
 | [learn](./learn/SKILL.md) | Six-phase research workflow for unfamiliar material. |
+| [make-resume](./make-resume/SKILL.md) | 中文可编辑 HTML 简历制作。 |
+| [offer](./offer/SKILL.md) | 秋招投递和招聘邮件进度管理。 |
 | [open-source-readme](./open-source-readme/SKILL.md) | Create, rewrite, or review README files. |
 | [ppp-creator](./ppp-creator/SKILL.md) | Create concise PPP work status updates. |
 | [project-bootstrap](./project-bootstrap/SKILL.md) | 初始化项目骨架和工程规范。 |
+| [project-guide](./project-guide/SKILL.md) | 中文项目导学、项目分析和项目面经整理。 |
 | [prototype](./prototype/SKILL.md) | Build a throwaway prototype to answer a design question. |
 | [python-patterns](./python-patterns/SKILL.md) | Pythonic idioms, type hints, and best practices. |
 | [python-testing](./python-testing/SKILL.md) | Python testing with pytest, fixtures, mocking, and coverage. |
@@ -239,7 +263,7 @@ skill-name/
 | [ui-demo](./ui-demo/SKILL.md) | Record polished UI demo videos with Playwright. |
 | [wayfinder](./wayfinder/SKILL.md) | Plan large work as a shared decision map. |
 | [write](./write/SKILL.md) | Rewrite and polish Chinese or English prose. |
-| [writing-great-skills](./writing-great-skills/SKILL.md) | Reference for writing and editing skills well. |
+| [writing-for-agents](./writing-for-agents/SKILL.md) | Writing documents for agents, skills, AGENTS.md, and CLAUDE.md. |
 
 ## 维护命令
 

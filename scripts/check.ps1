@@ -101,6 +101,10 @@ Test-PathPair "skills" $ClaudeHome
 Test-AgentPair $ClaudeHome
 Test-PathPair "commands" $ClaudeHome
 Test-PathPair "templates" $ClaudeHome
+Test-PathPair "assets" $ClaudeHome
+Test-PathPair "references" $ClaudeHome
+Test-FilePair "scripts/inline-template.mjs" (Join-Path $ClaudeHome "scripts/inline-template.mjs")
+Test-FilePair "scripts/export-resume-pdf.mjs" (Join-Path $ClaudeHome "scripts/export-resume-pdf.mjs")
 Test-FilePair "CLAUDE.md" (Join-Path $ClaudeHome "CLAUDE.md")
 
 Test-PathPair "rules" $CodexHome
@@ -108,6 +112,10 @@ Test-PathPair "skills" $CodexHome
 Test-AgentPair $CodexHome
 Test-PathPair "commands" $CodexHome
 Test-PathPair "templates" $CodexHome
+Test-PathPair "assets" $CodexHome
+Test-PathPair "references" $CodexHome
+Test-FilePair "scripts/inline-template.mjs" (Join-Path $CodexHome "scripts/inline-template.mjs")
+Test-FilePair "scripts/export-resume-pdf.mjs" (Join-Path $CodexHome "scripts/export-resume-pdf.mjs")
 Test-FilePair "AGENTS.md" (Join-Path $CodexHome "AGENTS.md")
 
 if ($Json) {

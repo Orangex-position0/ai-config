@@ -87,6 +87,10 @@ Add-CopyDirOperation "skills" $ClaudeHome
 Add-AgentOperation $ClaudeHome
 Add-CopyDirOperation "commands" $ClaudeHome
 Add-CopyDirOperation "templates" $ClaudeHome
+Add-CopyDirOperation "assets" $ClaudeHome
+Add-CopyDirOperation "references" $ClaudeHome
+Add-CopyFileOperation "scripts/inline-template.mjs" (Join-Path $ClaudeHome "scripts/inline-template.mjs")
+Add-CopyFileOperation "scripts/export-resume-pdf.mjs" (Join-Path $ClaudeHome "scripts/export-resume-pdf.mjs")
 Add-CopyFileOperation "CLAUDE.md" (Join-Path $ClaudeHome "CLAUDE.md")
 
 Add-CopyDirOperation "rules" $CodexHome
@@ -94,6 +98,10 @@ Add-CopyDirOperation "skills" $CodexHome
 Add-AgentOperation $CodexHome
 Add-CopyDirOperation "commands" $CodexHome
 Add-CopyDirOperation "templates" $CodexHome
+Add-CopyDirOperation "assets" $CodexHome
+Add-CopyDirOperation "references" $CodexHome
+Add-CopyFileOperation "scripts/inline-template.mjs" (Join-Path $CodexHome "scripts/inline-template.mjs")
+Add-CopyFileOperation "scripts/export-resume-pdf.mjs" (Join-Path $CodexHome "scripts/export-resume-pdf.mjs")
 Add-CopyFileOperation "AGENTS.md" (Join-Path $CodexHome "AGENTS.md")
 
 foreach ($Operation in $Operations) {

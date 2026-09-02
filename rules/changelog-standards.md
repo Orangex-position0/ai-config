@@ -23,7 +23,7 @@ paths:
 
 ## 2. 模板来源
 
-项目初始化时使用 `skills/project-bootstrap/assets/templates/changelog-template.md` 作为初始文件。本 rule 只定义 CHANGELOG 质量约束，不保存可复制模板正文。
+项目初始化时使用 `skills/project-bootstrap/assets/templates/<language>/changelog-template.md` 作为初始文件。本 rule 只定义 CHANGELOG 质量约束，不保存可复制模板正文。
 
 ---
 
