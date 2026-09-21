@@ -107,7 +107,13 @@ paths:
 
 ### 2.6 空值处理
 
-- 不允许返回 `null`（集合返回 `emptyList()`，对象返回空对象或抛异常）
+- 禁止在未确认可空性的情况下直接解引用对象
+- 对契约规定不得为 `null` 的参数，必须在方法或构造器入口使用 Guard Clause 校验，禁止让非法 `null` 继续向下传播
+- 内部编程契约使用 `Objects.requireNonNull(value, "明确的参数说明")`；外部输入使用 Bean Validation；领域校验失败使用明确的领域异常或 `IllegalArgumentException`
+- Guard Clause 直接 `return` 仅适用于 `null` 明确表示合法无操作的场景；否则必须抛出明确异常
+- 禁止捕获 `NullPointerException` 作为正常控制流，也禁止用静默返回或无条件默认值掩盖非空契约错误
+- 不允许返回未声明的 `null`；集合返回空集合，对象缺失使用 `Optional`、明确的结果类型或抛出异常
+- Java nullability contract、JSpecify `@NullMarked` / `@Nullable` 与 NullAway 接入策略详见 [java-nullsafety.md](./java-nullsafety.md)
 - Optional 规范详见 [java-optional-standards.md](./java-optional-standards.md)
 
 ### 2.7 类内成员声明顺序

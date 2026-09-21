@@ -1,0 +1,17 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1146 717" role="img" aria-labelledby="title desc">
+  <title id="title">Dark Technical Split skeleton</title>
+  <desc id="desc">Low-fidelity cover layout with semantic placeholders for hook, subject, technical asset, logo, and series label.</desc>
+  <rect width="1146" height="717" fill="#202124"/>
+  <rect x="72" y="72" width="1002" height="573" rx="24" fill="none" stroke="#6e9f3a" stroke-width="3" stroke-dasharray="12 10"/>
+  <rect x="105" y="174" width="510" height="220" rx="20" fill="#2c2d30" stroke="#ff8a00" stroke-width="4"/>
+  <text x="135" y="255" fill="#fff4d6" font-family="Arial, sans-serif" font-size="58" font-weight="700">[HOOK]</text>
+  <text x="138" y="318" fill="#f6c85f" font-family="Arial, sans-serif" font-size="25">[SUBTITLE]</text>
+  <rect x="675" y="135" width="300" height="355" rx="28" fill="#303235" stroke="#f6c85f" stroke-width="4" stroke-dasharray="10 8"/>
+  <text x="725" y="300" fill="#fff4d6" font-family="Arial, sans-serif" font-size="30" font-weight="700">[SUBJECT]</text>
+  <text x="742" y="344" fill="#6e9f3a" font-family="Arial, sans-serif" font-size="22">[TECH-ASSET]</text>
+  <rect x="963" y="92" width="70" height="70" rx="18" fill="#ff8a00" stroke="#fff4d6" stroke-width="3"/>
+  <text x="972" y="135" fill="#202124" font-family="Arial, sans-serif" font-size="18" font-weight="700">[LOGO]</text>
+  <text x="108" y="584" fill="#f6c85f" font-family="Arial, sans-serif" font-size="23">[SERIES]</text>
+  <text x="785" y="584" fill="#fff4d6" font-family="Arial, sans-serif" font-size="20">[DECORATION]</text>
+  <text x="72" y="690" fill="#9aa0a6" font-family="Arial, sans-serif" font-size="16">SAFE AREA · 6–10% LOGO · ONE FOCAL SUBJECT</text>
+</svg>

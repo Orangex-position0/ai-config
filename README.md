@@ -2,7 +2,7 @@
 
 [简体中文](README.zh-CN.md)
 
-Personal AI coding configuration for maintaining the rules, skills, agents, commands, and install scripts used by Claude Code and Codex.
+Personal AI coding configuration for maintaining the shared rules, skills, agents, commands, and install scripts used by Claude Code, Codex, and Pi.
 
 This repository is meant to be versioned on GitHub and reused across machines.
 
@@ -30,15 +30,24 @@ macOS / Linux:
 ./scripts/install.sh
 ```
 
-The install scripts copy this repository's configuration into the default homes:
+The install scripts treat this repository as the source of truth and install shared resources into:
+
+- Shared agent config: `~/.agents`
+
+Claude Code and Codex then receive runtime projections that link back to the shared resources:
 
 - Claude Code: `~/.claude`
 - Codex: `~/.codex`
 
+Pi can be configured to scan `~/.agents/skills` directly; the installer does not write into a Pi-specific home.
+
 You can override the target directories with:
 
+- `AGENTS_HOME`
 - `CLAUDE_HOME`
 - `CODEX_HOME`
+
+By default the installer creates links for shared directories and falls back to copying if links are unavailable. It refuses to replace drifted or unmanaged local content unless you pass `--force`.
 
 ## Preview Changes
 
@@ -68,4 +77,9 @@ macOS / Linux:
 ./scripts/check.sh
 ```
 
-The check scripts compare the repository with the installed local configuration and fail when files are missing or have drifted.
+The check scripts verify both layers:
+
+1. repository content → `~/.agents`
+2. `~/.agents` → Claude Code and Codex runtime projections
+
+They fail when files are missing or drifted, and warn when a projection is using copy fallback instead of links or when shared skills/rules contain runtime-specific paths.

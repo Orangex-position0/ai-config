@@ -2,7 +2,7 @@
 name: java-coding-standards
 description: "Java coding standards for Spring Boot and Quarkus services: naming, immutability, Optional usage, streams, exceptions, generics, CDI, reactive patterns, and project layout. Automatically applies framework-specific conventions."
 metadata:
-origin: ECC
+  origin: ECC
 ---
 
 # Java Coding Standards
@@ -311,9 +311,52 @@ Logger log; // CDI-injected, scoped to declaring class
 
 ## Null Handling
 
-- Accept `@Nullable` only when unavoidable; otherwise use `@NonNull`
-- Use Bean Validation (`@NotNull`, `@NotBlank`) on inputs
-- **[QUARKUS]**: Apply `@Valid` on `@BeanParam`, `@RestForm`, and request body parameters
+Follow the null-handling constraints in
+[`rules/java/java-coding-standards.md`](../../rules/java/java-coding-standards.md).
+
+When writing or reviewing a method:
+
+1. Determine whether each parameter and return value is nullable.
+2. Validate non-null parameters before their first dereference.
+3. Use a Guard Clause instead of wrapping the main logic in nested null checks.
+4. Use `Objects.requireNonNull` for internal programming contracts.
+5. Use Bean Validation and `@Valid` at HTTP, messaging, and framework boundaries.
+6. Use a domain-specific exception when a value violates a business rule.
+7. Represent legitimate absence with `Optional`, an empty collection, `@Nullable`, or an explicit result type.
+8. Never catch `NullPointerException` as normal control flow.
+
+```java
+// FAIL: accidental NPE occurs after entering the method
+public Order createOrder(CreateOrderCommand command) {
+  return orderRepository.save(toOrder(command.customerId(), command.items()));
+}
+
+// PASS: fail fast before the first dereference
+public Order createOrder(CreateOrderCommand command) {
+  Objects.requireNonNull(command, "command must not be null");
+
+  if (command.customerId() == null) {
+    throw new IllegalArgumentException("customerId must not be null");
+  }
+
+  if (command.items() == null || command.items().isEmpty()) {
+    throw new InvalidOrderException("order must contain at least one item");
+  }
+
+  return orderRepository.save(toOrder(command.customerId(), command.items()));
+}
+```
+
+During review, report:
+
+- Dereferences performed before null validation
+- Nullable values flowing into non-null code
+- Methods returning undocumented `null`
+- Deep null-check nesting that should use a Guard Clause
+- `catch (NullPointerException ...)` used as control flow
+- Default values or silent returns that hide invalid input
+
+**[QUARKUS]**: Apply `@Valid` on `@BeanParam`, `@RestForm`, and request body parameters.
 
 ## Configuration
 

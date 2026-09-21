@@ -12,6 +12,7 @@
 | `java-workflow` | `<rules>/java/java-workflow-standards.md` |
 | `ddd-architecture` | `<rules>/ddd-architecture.md` |
 | `java-coding` | `<rules>/java/java-coding-standards.md` |
+| `java-nullsafety` | `<rules>/java/java-nullsafety.md` |
 | `conventional-commit` | `<rules>/common/conventional-commit.md` |
 
 ## 使用锚点
@@ -22,6 +23,8 @@
 | 工具链选型与节奏 | `java-workflow` | §1.1 职责一览 + §2 本地命令节奏 |
 | DDD 分层目录结构 | `ddd-architecture` | 「分层架构实现」 |
 | Java 编码 HARD RULE | `java-coding` | 全文 |
+| Java nullability 默认契约 | `java-nullsafety` | 「Java 代码生成约束」 |
+| JSpecify / NullAway 接入 | `java-nullsafety` | 「工程接入策略」 |
 | commit 规范 | `conventional-commit` | 项目特定约定 |
 
 ## lefthook.yml（物化指令）
@@ -36,6 +39,79 @@
 按 `ddd-architecture.md`「分层架构实现」建包骨架。单模块应用在 `src/main/java/<group>/<artifact>/` 下建分层包；多模块 Maven 项目按 `api / app / domain / infrastructure / trigger / types` 拆 module。**不确定模块划分时先问用户**，不臆造。
 
 必建空目录（`.gitkeep` 占位）：`src/main/java/`、`src/test/java/`、`src/main/resources/`。分层包是否预建由用户决定，rules 未强制要求空包存在。
+
+## Null Safety（物化指令）
+
+初始化 Java/Spring 生产项目时，询问用户是否接入 NullAway；默认推荐接入。用户同意后才修改 `pom.xml` / `build.gradle`，用户拒绝时不修改构建文件，但仍按 `java-nullsafety` 的 Java 代码生成约束生成新代码。
+
+模板资产：
+
+| 目标 | 模板资产 |
+|---|---|
+| Maven NullAway 配置片段 | `assets/templates/java/maven-nullaway-plugin.xml` |
+| Gradle Groovy NullAway 配置片段 | `assets/templates/java/gradle-nullaway.gradle` |
+| package-info.java | `assets/templates/java/package-info.java` |
+
+物化规则：
+
+- 新项目默认使用 `OnlyNullMarked=true`，不使用 `AnnotatedPackages`。
+- 只支持 Maven `pom.xml` 与 Gradle Groovy `build.gradle` 的最小接入；`build.gradle.kts`、多模块父子配置、已有 Error Prone 复杂配置必须先读项目结构后现场处理。
+- 能从 Spring Boot 主类或既有 Java package 推出 base package 时，按 `package-info.java` 模板生成 `src/main/java/<base-package>/package-info.java`。
+- 不能确定 base package 时，不臆造 `com.example`；在收尾说明提示用户确定 base package 后补 `package-info.java`。
+- 不生成 NullAway demo class。接入后用项目现有 wrapper 执行最小验证：Maven `./mvnw -q test` 或 `./mvnw -q verify`，Gradle `./gradlew test` 或 `./gradlew check`。
+- 无 wrapper、空项目或依赖下载不可用时，只报告“已配置，未本地验证”，不裸写 `mvn` / `gradle` 命令。
+
+## GitHub Actions CI
+
+只在 `project-bootstrap` 主流程判定需要 GitHub Actions CI 时生成 `.github/workflows/ci.yml`；若同名文件已存在，跳过并提示，不覆盖。
+
+Maven wrapper 项目：
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: maven
+      - run: ./mvnw -q verify
+```
+
+Gradle wrapper 项目：
+
+```yaml
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+jobs:
+  java:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+          cache: gradle
+      - run: ./gradlew check
+```
+
+前提：项目根已有 `mvnw` / `gradlew` wrapper；无 wrapper 时提示用户先生成，不在 CI 里裸写 `mvn`/`gradle`。
 
 ## 依赖工具
 

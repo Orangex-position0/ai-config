@@ -1,0 +1,20 @@
+import js from "@eslint/js";
+import globals from "globals";
+import tseslint from "typescript-eslint";
+
+import { architectureBoundaries } from "./eslint.boundaries.config.js";
+
+export default tseslint.config(
+  {
+    ignores: ["dist"],
+  },
+  js.configs.recommended,
+  ...tseslint.configs.recommended,
+  {
+    files: ["src/**/*.{ts,tsx}"],
+    languageOptions: {
+      globals: globals.browser,
+    },
+  },
+  ...architectureBoundaries,
+);

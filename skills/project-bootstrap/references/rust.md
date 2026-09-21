@@ -9,7 +9,8 @@
 
 1. 继续执行通用文档模板物化：ADR、PRD、BDD、CHANGELOG，以及按需 API 文档。
 2. 继续按 GitHub 开源判断物化 issue / PR 模板。
-3. **REQUIRED SUB-SKILL:** Use `rust-workflow` for all Rust-specific bootstrap work.
+3. GitHub Actions CI 判断仍由 `project-bootstrap` 主流程决定是否需要询问；一旦需要生成 Rust CI，交给 `$rust-workflow`。
+4. **REQUIRED SUB-SKILL:** Use `rust-workflow` for all Rust-specific bootstrap work.
 
 `project-bootstrap` 不再自行生成 Rust hooks、Cargo 配置、CI、`rust-toolchain.toml`、`rustfmt.toml`、Clippy lint 配置、`Cargo.lock` 策略、release profile、linker/cache/profiling 配置、cross build 配置或 Rust 目录骨架。
 
@@ -21,6 +22,7 @@
 - 用户选择的模板语言，仅作为最终汇报语言参考
 - 是否已生成通用文档模板
 - 是否已生成 GitHub issue / PR 模板
+- 是否需要生成 GitHub Actions CI，以及触发该决定的用户输入或 GitHub 信号
 - 是否检测到 API/接口契约需求
 
 其余 Rust 策略由 `$rust-workflow` 按目标项目文件自动检测；只有当选择会改变项目策略、增加 CI 成本、需要全局或网络安装、或无法从仓库推断时再问用户。

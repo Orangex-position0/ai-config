@@ -19,8 +19,8 @@ Do not use this for Next.js, Remix, React Native, Expo, or full monorepo workspa
    - `assets/router-file-based/` for `src/routes`.
 3. Copy only the needed template files into the target project. Prefer `npm create vite@latest` for dependency versions, then layer this template over it.
 4. Read `references/project-structure.md` when deciding where code belongs or when reviewing an existing structure.
-5. Add the minimal ESLint boundary checks from the selected template if the project already uses ESLint. Do not add ESLint only for architecture purity unless the user asks.
-6. Run the smallest available check, usually `npm run typecheck`, `npm run lint`, or the repository's existing `check` script.
+5. For a new React + TypeScript project, copy the selected `eslint.config.js` and `eslint.boundaries.config.js` templates. For an existing project, add them only when the user requests ESLint; never overwrite an existing ESLint config.
+6. Read `references/tooling.md` when generating ESLint, Lefthook, or GitHub Actions configuration, then run the smallest available check, usually `npm run typecheck`, `npm run lint`, or the repository's existing `check` script.
 
 ## Defaults
 
@@ -41,8 +41,11 @@ Do not keep both `src/pages` plus `src/app/router` and `src/routes` as competing
 
 ## Template Resources
 
-- `assets/router-classic/` contains the minimal `src/app/router` plus `src/pages` layout.
-- `assets/router-file-based/` contains the minimal `src/routes` layout.
+- `assets/router-classic/` contains the minimal `src/app/router` plus `src/pages` layout and ESLint templates.
+- `assets/router-file-based/` contains the minimal `src/routes` layout and ESLint templates.
 - `references/project-structure.md` contains placement rules, API layer guidance, TypeScript baseline, and boundary-check rationale.
+- `references/tooling.md` contains the React-specific ESLint, Lefthook, and GitHub Actions configuration contract.
+
+The ESLint template is TypeScript-first and uses flat config with `@eslint/js`, `globals`, and `typescript-eslint`; it also applies the selected architecture boundary rules. Add these packages as dev dependencies when they are absent.
 
 Skipped: package dependency versions. Use the target project's package manager or Vite initializer so versions stay current.

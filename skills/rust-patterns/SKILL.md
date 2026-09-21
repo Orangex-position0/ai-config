@@ -60,54 +60,48 @@ fn normalize(input: &str) -> Cow<'_, str> {
 
 ## Error Handling
 
-### Use `Result` and `?` — Never `unwrap()` in Production
+错误处理的首要问题不是“选 `thiserror` 还是 `anyhow`”，而是**错误最终由谁消费**。完整规则见 [`rules/rust/rust-error-handling.md`](../../rules/rust/rust-error-handling.md)。
+
+### Decision Flow
+
+1. Library caller 需要按类型分支处理：定义模块自己的 `thiserror` error。
+2. Application boundary 只需报告失败：使用 `anyhow`，在边界补充 context。
+3. 底层错误跨模块传播前：转换为当前模块语义，避免把数据库、网络或框架类型写进稳定 public API。
+4. Variant 按调用方处理策略设计，例如重试、等待或终止，而不是按底层协议栈拆分。
+5. 跨 crate 的 public error enum 默认加 `#[non_exhaustive]`；内部错误不为此增加无用复杂度。
+6. 只在语义边界转换错误；多层包装或大量 `From` 实现说明边界可能过细。
+
+### Typed Library Error
 
 ```rust
-// Good: Propagate errors with context
+use thiserror::Error;
+
+#[derive(Debug, Error)]
+#[non_exhaustive]
+pub enum CacheError {
+    #[error("key `{0}` not found")]
+    NotFound(String),
+    #[error("cache backend failed")]
+    Backend {
+        #[source]
+        source: Box<dyn std::error::Error + Send + Sync>,
+    },
+}
+```
+
+### Application Error with Lazy Context
+
+```rust
 use anyhow::{Context, Result};
 
 fn load_config(path: &str) -> Result<Config> {
     let content = std::fs::read_to_string(path)
         .with_context(|| format!("failed to read config from {path}"))?;
-    let config: Config = toml::from_str(&content)
-        .with_context(|| format!("failed to parse config from {path}"))?;
-    Ok(config)
-}
-
-// Bad: Panics on error
-fn load_config_bad(path: &str) -> Config {
-    let content = std::fs::read_to_string(path).unwrap(); // Panics!
-    toml::from_str(&content).unwrap()
+    toml::from_str(&content).context("failed to parse config")
 }
 ```
 
-### Library Errors with `thiserror`, Application Errors with `anyhow`
-
-```rust
-// Library code: structured, typed errors
-use thiserror::Error;
-
-#[derive(Debug, Error)]
-pub enum StorageError {
-    #[error("record not found: {id}")]
-    NotFound { id: String },
-    #[error("connection failed")]
-    Connection(#[from] std::io::Error),
-    #[error("invalid data: {0}")]
-    InvalidData(String),
-}
-
-// Application code: flexible error handling
-use anyhow::{bail, Result};
-
-fn run() -> Result<()> {
-    let config = load_config("app.toml")?;
-    if config.workers == 0 {
-        bail!("worker count must be > 0");
-    }
-    Ok(())
-}
-```
+Use `.context("...")` for fixed text and `.with_context(|| ...)` for dynamic or expensive text. Use `unwrap_or*` only when the fallback is valid business behavior; use `expect("reason")` only when an invariant makes failure impossible.
 
 ### `Option` Combinators Over Nested Matching
 
