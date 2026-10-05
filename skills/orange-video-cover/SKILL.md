@@ -5,117 +5,193 @@ description: "Create, critique, and adapt branded video covers and thumbnails. U
 
 # Video Cover
 
-Run cover work through four layers:
+Use this skill as a decision flow, not as a free-form image prompt. Every new cover must pass through these layers:
 
-- **Brand Profile**: stable identity anchors.
-- **Content Brief**: one core idea, hook, and visual metaphor for this video.
-- **Platform Adapter**: one target composition, ratio, safe area, and density.
-- **Quality Gate**: observable checks before delivery.
+- **Brand Profile**: stable identity anchors or an explicitly marked `temporary-profile`.
+- **Content Brief**: one core idea, audience, and visual metaphor.
+- **Cover Type**: one content-led type selected from the existing catalog.
+- **Composition Pair**: one Cover Template combined with one compatible People Reference or an explicit no-person choice.
+- **Platform Adapter**: one platform, ratio, safe area, and density.
+- **Style Recipe**: one visual treatment applied after the content structure is fixed.
+- **Quality Gates**: pre-generation and post-generation checks.
 
-Load only the reference needed by the selected branch:
+## References
 
-- Technical or programming concept: [references/technical-covers.md](references/technical-covers.md)
-- Platform-specific composition: [references/platforms.md](references/platforms.md)
-- Style selection or prompt writing: [references/style-recipes.md](references/style-recipes.md)
-- Confirmed composition skeletons and visual previews: `assets/templates/`
+Load only what the selected branch needs:
+
+- Cover Type definitions: [references/templates.md](references/templates.md)
+- Type, template, and people compatibility: [references/template-selection.md](references/template-selection.md)
+- People assets: [references/people/index.md](references/people/index.md)
+- Cover visual references: [references/covers/index.md](references/covers/index.md)
+- Style selection and prompt writing: [references/style-recipes.md](references/style-recipes.md)
+- Platform composition: [references/platforms.md](references/platforms.md)
+- Technical or programming concepts: [references/technical-covers.md](references/technical-covers.md)
 - Brand onboarding or profile update: [references/onboarding.md](references/onboarding.md)
 - Editable Figma draft: [references/figma-draft.md](references/figma-draft.md)
 
 ## Route
 
-Classify the request before acting:
+Classify the request before acting and state the selected route. Do not mix route contracts.
 
-- `generate-cover`: create one new cover image. Follow the generation loop below.
-- `critique-cover`: review an existing cover under Brand, Content, Platform, and Compliance layers; return the smallest revision plan.
-- `adapt-platform`: adapt an existing cover direction to one other platform; preserve brand anchors and core metaphor while changing crop, hierarchy, subject scale, and density. This is not batch export.
-- `figma-draft`: read `references/figma-draft.md`, then create an editable draft or Figma-ready layer specification.
-- `update-profile`: read `references/onboarding.md`; propose profile changes and write `.video-cover/brand-profile.md` only after confirmation.
+- `generate-cover`: run the full generation flow below.
+- `critique-cover`: inspect an existing cover under Brand, Content, Platform, and Compliance; return the smallest revision plan. Do not enter the full generation flow unless requested.
+- `adapt-platform`: preserve the confirmed Cover Type, Cover Template, People Reference, Style Recipe, and brand anchors; change only the Platform Adapter and affected composition decisions. This is one adaptation, not batch export.
+- `figma-draft`: use the confirmed Cover Plan and [references/figma-draft.md](references/figma-draft.md) to return an editable layer specification.
+- `update-profile`: use [references/onboarding.md](references/onboarding.md); propose exact Brand Profile changes and write them only after explicit confirmation.
 
-Completion criterion: state the selected route and do not mix its output contract with another route.
+## State model
 
-## Generation loop
+Maintain these states internally for the current run:
 
-### 1. Establish the profile
+- `pending`: not decided;
+- `inferred`: derived from user input but not presented;
+- `recommended`: presented as a recommendation;
+- `confirmed`: user accepted or explicitly supplied;
+- `blocked`: required information is missing or contradictory;
+- `revision-needed`: a quality gate failed.
 
-Look for `.video-cover/brand-profile.md`, then use brand context in the current request. If neither is usable, declare a `temporary-profile` and continue; tell the user that it is temporary and offer to create a profile later. Read onboarding only when profile creation or update is needed.
+Do not generate while a required decision is `pending`, `recommended`, `blocked`, or `revision-needed`. Show the user only the current decision frontier, not hidden reasoning or the full state table.
 
-Never write a temporary preference to the profile without confirmation.
+User input has priority. When the user explicitly supplies a Cover Type, template, person, title, platform, or recipe, lock it as `confirmed` and check compatibility instead of recommending a replacement.
 
-Completion criterion: a usable Brand Profile or an explicitly declared temporary profile exists for this run.
+## Generation flow
+
+### 1. Establish the Brand Profile
+
+Look for `.video-cover/brand-profile.md` and use it when available. If it is missing or unusable, create an in-memory `temporary-profile`; state that it is temporary and do not write it without confirmation.
+
+Use `assets/fixed/icon.png` as the primary personal mark on every cover. Keep it inside the safe area, visually subordinate to the title, and in a consistent default position such as the bottom-right corner. Scale it down when the composition is dense, but retain a visible mark unless the user explicitly overrides this rule.
+
+**Completion criterion:** a usable Brand Profile or explicit `temporary-profile` exists, and the primary mark has a planned placement.
 
 ### 2. Build the Content Brief
 
 Extract:
 
 - topic and audience;
+- the video's communication job;
 - one problem, shift, mechanism, or surprise;
 - one visual metaphor;
-- available logos, screenshots, reference images, and exclusions.
+- supplied logos, screenshots, reference images, and exclusions.
 
-If the request contains multiple possible core ideas, ask only the question needed to select one. Keep technical code, UI, and diagrams as small supporting evidence rather than the focal subject.
+Reduce competing ideas to one core concept. Ask only for missing information that can change the composition. Infer secondary details and mark the assumptions when useful.
 
-Completion criterion: the brief names exactly one core concept and one visual metaphor.
+**Completion criterion:** the brief names exactly one core concept, one audience, and one visual metaphor.
 
-### 3. Lock the title
+### 3. Run the pre-generation Quality Gate
 
-Use this branch:
+Before selecting visual assets, check:
 
-- User supplied a final title: preserve it; check truthfulness, length, and readability, then ask for confirmation.
-- User supplied only a topic: propose 1–3 short title candidates and wait for selection.
-- User asked for title creation: propose 1–3 candidates and wait for selection.
+- exactly one core concept exists;
+- the communication job is clear;
+- a supplied title or topic is truthful;
+- the platform has a value or an explicit `16:9` default;
+- user constraints do not conflict.
 
-Do not silently rewrite a user-supplied final title.
+If a conflict would change the composition, pause and ask one focused question. Otherwise continue with a stated assumption.
 
-Completion criterion: one final title is confirmed or the user explicitly accepts the supplied title.
+**Completion criterion:** no blocking pre-generation issue remains.
 
-### 4. Resolve platform and missing decisions
+### 4. Select the Cover Type
 
-Use the following order for blocking decisions:
+Read [references/templates.md](references/templates.md) and [references/template-selection.md](references/template-selection.md). Select exactly one existing Cover Type based on what the viewer should understand first, not on a preferred color or aesthetic.
 
-1. one core concept;
-2. final title;
-3. Brand Profile or temporary profile;
-4. target platform or ratio;
-5. Style Recipe;
-6. composition proposal.
+The available Cover Types are:
 
-When platform is missing, use a 16:9 long-form direction. A Platform Adapter affects the composition of this one original image; it does not produce multi-platform variants.
+- `Concept Poster`
+- `Problem Versus Solution`
+- `Workbench`
+- `Signal Focus`
+- `Character Plus Concept`
 
-Completion criterion: every decision that changes the composition has a value or an explicit default.
+Recommend one type with a short rationale. If two types are genuinely close, list no more than two alternatives. Wait for explicit user confirmation unless the user already specified the type.
 
-### 5. Recommend and confirm a Style Recipe
+**Completion criterion:** one Cover Type is `confirmed` with a content-based rationale.
 
-Read [references/style-recipes.md](references/style-recipes.md). When the selected recipe has a matching file in `assets/templates/`, use its skeleton as a composition constraint and its preview as a visual reference. Recommend one recipe using the Brand Profile, Content Brief, and Platform Adapter. Explain the trade-off in one or two sentences.
+### 5. Build the Composition Pair
 
-A recommendation is not a selection. Wait for the user to explicitly choose or change the recipe.
+Using the confirmed Cover Type, read [references/template-selection.md](references/template-selection.md) and [references/people/index.md](references/people/index.md).
 
-Completion criterion: one Style Recipe is explicitly selected.
+1. Select exactly one compatible Cover Template.
+2. Determine the People Reference policy: `required`, `optional`, or `forbidden`.
+3. Select at most one matching people asset, or explicitly choose no person.
+4. Use [references/covers/index.md](references/covers/index.md) only as a visual reference; do not copy its complete layout, text, silhouette, or logo system.
 
-### 6. Propose the composition
+A Cover Type change invalidates the dependent template and people choice. A person choice must never force a previously unsuitable Cover Type.
 
-Before generating, show a compact proposal containing:
+**Completion criterion:** one Cover Template and one compatible person choice are `confirmed`.
 
-- canvas ratio, dimensions, and safe area;
+### 6. Lock the title
+
+Only after the Cover Type and Composition Pair are fixed:
+
+- preserve a user-supplied final title;
+- if only a topic exists, propose 1–3 short titles that fit the Cover Type;
+- never silently rewrite a supplied final title;
+- check truthfulness, length, and thumbnail readability.
+
+Wait for explicit selection or acceptance when proposing titles.
+
+**Completion criterion:** one title is `confirmed`.
+
+### 7. Resolve the Platform Adapter
+
+Choose or infer:
+
+- platform and aspect ratio;
+- output dimensions;
+- safe area;
+- title density and subject scale;
+- platform-specific crop or emotional intensity.
+
+When platform is missing, use a 16:9 long-form direction and state that default. Preserve the Cover Type, Cover Template, People Reference, and brand anchors while adapting the composition.
+
+**Completion criterion:** every platform decision that affects composition has a value or explicit default.
+
+### 8. Recommend and confirm the Style Recipe
+
+Read [references/style-recipes.md](references/style-recipes.md). Recommend one visual treatment using the Brand Profile, confirmed Cover Type, Cover Template, People Reference, and Platform Adapter. Explain the trade-off briefly and wait for selection or acceptance.
+
+A Style Recipe may change color, texture, typography treatment, and light direction. It must not replace the confirmed content structure or introduce a new template.
+
+**Completion criterion:** one Style Recipe is `confirmed` and compatible with the Composition Pair.
+
+### 9. Produce the Cover Plan
+
+Present only the decisions that affect the composition:
+
+- Cover Type and rationale;
+- Cover Template;
+- People Reference or no-person decision;
+- final title;
+- platform, dimensions, and safe area;
 - focal subject and visual metaphor;
-- final title, position, hierarchy, and approximate word count;
-- background, color, light, and texture direction;
-- retained brand anchors;
-- technical logo, screenshot, or supporting elements;
-- image-generation prompt draft and known risks.
+- title position and hierarchy;
+- subject position and scale;
+- background, color, light, and texture;
+- fixed personal mark placement;
+- supporting logo, screenshot, code, or diagram elements;
+- known risks and the image-generation prompt draft.
 
-Wait for confirmation. Apply requested changes before generation.
+Do not ask the user to approve every generation parameter. If a previous decision changes, roll back only its dependent decisions and re-run those steps.
 
-Completion criterion: the user confirms the composition proposal.
+**Completion criterion:** the user confirms the Cover Plan.
 
-### 7. Generate one original image
+### 10. Confirm generation intent
 
-Generate one direction and one original image by default. Generate multiple directions only when the user explicitly asks.
+A confirmed Cover Plan is not by itself permission to generate. Continue only when the user explicitly says to generate, or uses an unambiguous equivalent after all required decisions are confirmed.
+
+**Completion criterion:** generation intent is explicit.
+
+### 11. Generate one original image
+
+Generate one direction and one original image by default. Do not generate multiple candidates or silently retry.
 
 Select the text path by tool capability:
 
-1. Reliable text rendering: generate the image with the final title.
+1. Reliable text rendering: generate with the confirmed title.
 2. Unreliable text rendering: generate the subject/background without baked-in text and provide an overlay plan.
-3. No image tool: return the final prompt, negative prompt or exclusions, dimensions, layer plan, and overlay instructions. Do not create an empty image file.
+3. No image tool: return a complete Prompt Package with prompt, exclusions, dimensions, layer order, asset paths, and overlay instructions. Never create an empty image file.
 
 When an image tool is available, write the result to:
 
@@ -123,43 +199,43 @@ When an image tool is available, write the result to:
 .video-cover/outputs/YYYY-MM-DD-topic-cover.png
 ```
 
-Create the directory only when needed. Sanitize `topic` for the filename.
+**Completion criterion:** one image exists at the output path, or a complete executable Prompt Package has been returned.
 
-Completion criterion: an image exists at the output path, or a complete executable generation package has been returned.
+### 12. Run the post-generation Quality Gate
 
-### 8. Run the Quality Gate
+Mark every check `PASS` or `FAIL` with one observable sentence of evidence.
 
-Mark every check `PASS` or `FAIL` and include one observable sentence of evidence. Any `FAIL` enters `revision-needed`: explain the smallest change, wait for confirmation, then regenerate.
+#### Brand
 
-#### Brand Gate
+- `assets/fixed/icon.png` is visible inside the safe area;
+- the personal mark is subordinate but recognizable;
+- content elements do not erase creator identity;
+- third-party characters or logos are not used as the personal brand.
 
-- At least one stable brand anchor is visible and matches the Brand Profile.
-- Content elements do not erase the creator identity.
-- A third-party character or logo is not the personal brand identity.
+#### Content
 
-#### Content Gate
+- exactly one core concept is communicated;
+- the title is truthful;
+- the visual metaphor supports the Cover Type;
+- decorative technical elements have a content reason.
 
-- The cover communicates exactly one core concept.
-- The title is truthful to the video.
-- The visual metaphor supports that concept.
-- Every prominent decorative technology element has a content reason.
+#### Platform
 
-#### Platform Gate
+- ratio and dimensions match;
+- title and mark are inside the safe area;
+- title is legible at thumbnail size;
+- one focal path and appropriate density are present.
 
-- Ratio and dimensions match the target context.
-- Title and logo are inside the safe area.
-- The title remains fully legible at thumbnail preview size.
-- There is one dominant focal point.
-- Information density matches the platform context.
+#### Compliance
 
-#### Compliance Gate
+- the cover does not reproduce a recognizable creator's complete system;
+- personal portraits are user-provided or authorized;
+- the image does not promise content absent from the video;
+- reference images were used for principles, not copied as layouts.
 
-- The result does not reproduce a recognizable creator's complete cover system.
-- Personal portraits are user-provided or authorized.
-- The image does not promise content the video does not contain.
-- Third-party logos, characters, and screenshots serve a relevant content purpose.
+If any check fails, set `revision-needed`, identify the single most serious problem, and propose the smallest revision. Wait for confirmation before one regeneration. If the revised result fails again, stop and report the remaining risk.
 
-Completion criterion: every check is `PASS`, or the user explicitly accepts the recorded risks.
+**Completion criterion:** all checks pass, or the user explicitly accepts the recorded risk.
 
 ## Output contracts
 
@@ -167,22 +243,32 @@ Completion criterion: every check is `PASS`, or the user explicitly accepts the 
 
 Return:
 
+- route;
+- Cover Type and rationale;
+- Cover Template;
+- Style Recipe;
+- People Reference or explicit no-person choice;
 - final title;
-- selected Style Recipe;
-- visual metaphor and focal subject;
-- retained Brand anchors;
 - Platform Adapter and dimensions;
-- generated image path, or prompt package when no image tool is available;
-- four Quality Gate results with `PASS`/`FAIL` evidence;
-- overlay or polish notes when text rendering or compositing needs manual work.
+- generated image path or Prompt Package;
+- post-generation Quality Gate results;
+- remaining risks and overlay notes.
 
 ### Critique
 
-Return findings under `Brand`, `Content`, `Platform`, and `Compliance`, followed by the smallest actionable revision plan.
+Return findings under `Brand`, `Content`, `Platform`, and `Compliance`, then the smallest revision plan. Include the inferred Cover Type, Template, and People Reference only when they help explain a finding.
+
+### Platform adaptation
+
+Return the preserved decisions, changed Platform Adapter, revised composition, and platform-specific Quality Gate results. Do not silently create other platform variants.
+
+### Figma draft
+
+Return the confirmed Cover Plan as an editable layer specification following [references/figma-draft.md](references/figma-draft.md).
 
 ### Profile update
 
-Propose the exact changes first. Write `.video-cover/brand-profile.md` only after explicit confirmation. Keep one-off title, topic imagery, platform ratio, and episode decoration out of the profile.
+Propose exact changes first. Write `.video-cover/brand-profile.md` only after explicit confirmation. Keep one-off title, topic imagery, platform ratio, and episode decoration out of the profile.
 
 ## Positive guardrails
 

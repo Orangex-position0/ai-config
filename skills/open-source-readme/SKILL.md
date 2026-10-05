@@ -31,38 +31,57 @@ Do not treat profile README files, product landing pages, paper homepages, or ma
    - Governance files: `LICENSE`, `CONTRIBUTING.md`, `CODE_OF_CONDUCT.md`, `SECURITY.md`.
    - Existing commands: install, build, run, test, lint, example execution.
 
-3. Identify the project type:
-   - Library / SDK: emphasize installation, import, smallest API call, compatibility.
-   - CLI: emphasize install, first command, flags, real output, shell completion if present.
-   - GUI / Web / TUI: emphasize screenshot, GIF, demo URL, local run command.
-   - Framework / template / starter: emphasize generated result, directory shape, next commands.
-   - Service / platform: emphasize architecture boundary, configuration, deployment, security reporting.
+3. Identify the project type and existing README style:
+   - Library / SDK: installation, import, smallest API call, compatibility.
+   - CLI: install, first command, flags, real output, shell completion if present.
+   - GUI / Web / TUI: screenshot, GIF, demo URL, local run command.
+   - Framework / template / starter: generated result, directory shape, next commands.
+   - Service / platform: architecture boundary, configuration, deployment, security reporting.
 
-4. Build the README around the first 60 seconds:
+4. Recommend one primary information architecture style and any secondary modules. Use one of:
+   - `CLI Quickstart`
+   - `Library / SDK API`
+   - `Product Showcase`
+   - `Framework / Starter`
+   - `Service / Platform`
+
+5. Present the recommendation and wait for explicit user confirmation before generating or substantially rewriting README files. A clear response such as “use the recommended style” is confirmation; do not treat an ambiguous response as confirmation.
+
+6. After confirmation, load the matching template from `assets/` and adapt it to verified project facts. The templates are progressive references, not permission to invent content.
+
+7. Build the README around the first 60 seconds:
    - Project name and one-sentence positioning.
    - Problem solved and target users.
    - Current maturity or support status when discoverable.
    - Visual or runtime evidence appropriate to project type.
    - Quickstart that reaches the smallest meaningful result.
 
-5. Verify factual claims:
+8. Verify factual claims:
    - Use commands only when they are discoverable from project files or existing docs.
    - Run the smallest safe verification command when practical.
    - If a command cannot be run, mark it as unverified and explain why.
    - Never invent badges, compatibility guarantees, benchmark numbers, screenshots, or public URLs.
 
-6. Keep README as a hub:
+9. Keep README as a hub:
    - Link to detailed docs instead of duplicating them.
    - Link to `LICENSE` instead of pasting license text.
    - Link to `CONTRIBUTING.md` when external contribution is expected.
    - Link to `SECURITY.md` or state the security reporting path for security-sensitive projects.
    - Link to `CHANGELOG.md` or releases when version history matters.
 
+10. For bilingual output, generate `README.md` and `README.zh-CN.md` from the same information architecture. Link the files to each other and keep commands, status, and governance links aligned.
+
 ## Create Path
 
-Use `assets/readme-template.md` as a starting structure when the project lacks a usable README.
-Delete irrelevant sections instead of leaving placeholders.
-Adapt heading names to the repository's existing language and style.
+Use the confirmed style template from `assets/` as a starting structure when the project lacks a usable README. Use `assets/readme-template.md` only as the generic fallback. Delete irrelevant sections instead of leaving placeholders, and adapt headings to the repository's language and audience.
+
+Available style templates:
+
+- `assets/cli-quickstart-template.md`
+- `assets/library-sdk-template.md`
+- `assets/product-showcase-template.md`
+- `assets/framework-starter-template.md`
+- `assets/service-platform-template.md`
 
 Minimum create output:
 
@@ -104,10 +123,7 @@ When asked only for review, do not rewrite the file unless requested.
 
 ## Language
 
-Use the repository's existing README language when present.
-For international open-source projects, prefer English in `README.md` and optional Chinese in `README.zh-CN.md`.
-For Chinese-first communities, Chinese `README.md` is acceptable; keep commands, APIs, package names, and error codes in English.
-When maintaining bilingual README files, ensure they link to each other and do not drift on commands, status, or governance links.
+Use the repository's existing README language when present. For a new bilingual README, use English in `README.md` and Simplified Chinese in `README.zh-CN.md` unless the user confirms another arrangement. Keep commands, APIs, package names, and error codes in English. When maintaining bilingual README files, ensure they link to each other and do not drift on commands, status, or governance links.
 
 ## Final Checklist
 

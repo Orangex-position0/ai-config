@@ -1,10 +1,10 @@
 # Style Recipes
 
-Style Recipes are composition strategies. Blend one recipe with the user's `.video-cover/brand-profile.md`; never treat a recipe as a fixed creator template.
+Style Recipes are visual treatments. Apply one recipe after selecting the Cover Type and cover template; blend it with the user's `.video-cover/brand-profile.md`. Never let a Style Recipe replace the content-led Cover Type decision.
 
 ## Selection rule
 
-Recommend one recipe from the table, explain the fit, and wait for explicit user selection before proposing the composition. When a recipe has a matching file in `../assets/templates/`, use the SVG skeleton to constrain placement and the preview SVG to communicate visual direction. Replace every placeholder before delivery.
+Recommend one recipe from the table, explain the fit, and wait for explicit user selection before proposing the composition. Use the selected cover template from `references/templates.md` as the composition constraint; Style Recipes do not depend on an SVG asset. Replace every placeholder before delivery.
 
 | Recipe | Structure | Best fit |
 | --- | --- | --- |
@@ -24,8 +24,8 @@ Recommend one recipe from the table, explain the fit, and wait for explicit user
 
 ### Dark Technical Split
 
-- Use `../assets/templates/dark-technical-split.svg` as the low-fidelity layout skeleton.
-- Use `../assets/templates/dark-technical-split-preview.svg` as the original Orange visual reference.
+- Use `Dark Technical Split` as the visual treatment only when it supports the selected Cover Type.
+- Use the selected cover template from `references/templates.md` for layout.
 - Reserve a clear title zone and a separate visual-subject zone.
 - Use one technical logo, simplified diagram, or symbolic mechanism.
 - Prefer high-contrast typography and restrained decoration.

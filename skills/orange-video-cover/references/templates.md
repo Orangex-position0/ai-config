@@ -1,74 +1,52 @@
-# Templates
+# Cover Type Catalog
 
-Templates are composition strategies, not fixed user brand files. Blend them with the user's `.video-cover/brand-profile.md`.
+This file is the single source of truth for the five existing Cover Types. Each type also provides its default Cover Template. A Cover Type describes the viewer's first understanding; a Cover Template describes the composition skeleton used to communicate it.
 
 ## Concept Poster
 
-Use when the video explains one strong idea.
-
-- Large short hook.
-- One central metaphor object.
-- Minimal background structure.
-- Small logo, ID, or series label.
-
-Best for: architecture ideas, design principles, conceptual tutorials.
+- **Communication job:** explain one idea, mechanism, or principle.
+- **Default template:** `Concept Poster`.
+- **Composition:** short hook, one central metaphor, quiet background, generous negative space.
+- **People policy:** optional; prefer no person or a neutral pose when the concept should lead.
+- **Best fit:** architecture ideas, design principles, methods, conceptual tutorials.
 
 ## Problem Versus Solution
 
-Use when the video has a clear before-after change.
-
-- Split composition or directional flow.
-- Left side shows friction, failure, or clutter.
-- Right side shows clarity, speed, or stronger structure.
-- Use one connector arrow, bridge, or transformation cue.
-
-Best for: refactoring, debugging, performance, migration, workflow improvement.
+- **Communication job:** make a before/after change immediately visible.
+- **Default template:** `Problem Versus Solution`.
+- **Composition:** friction or failure on one side, clarity or improvement on the other, with one transformation cue.
+- **People policy:** optional; use a pointing or explanatory pose only when it clarifies the transition.
+- **Best fit:** refactoring, debugging fixes, migration, performance improvements, comparisons.
 
 ## Workbench
 
-Use when the video teaches a practical build or tool workflow.
-
-- Show a desk, canvas, editor pane, terminal fragment, or tool board.
-- Make the output or key mechanism visually dominant.
-- Keep labels sparse.
-
-Best for: coding tutorials, AI agent demos, tool comparisons, setup guides.
+- **Communication job:** show a practical workflow, tool, build, or result.
+- **Default template:** `Workbench`.
+- **Composition:** desk, editor, terminal fragment, tool board, or work surface; make the result or key mechanism dominant.
+- **People policy:** optional; use a hands-on pose when the person is part of the workflow.
+- **Best fit:** coding tutorials, AI agent demos, setup guides, tool comparisons, practical builds.
 
 ## Signal Focus
 
-Use when the topic is about finding the important thing inside noise.
-
-- Use spotlight, zoom window, highlighted trace, or isolated module.
-- Push noise into the background.
-- Make the selected signal obvious.
-
-Best for: debugging, observability, code review, system diagnosis.
+- **Communication job:** isolate the important signal inside noise.
+- **Default template:** `Signal Focus`.
+- **Composition:** spotlight, zoom window, highlighted trace, breakpoint, or isolated module; push noise into the background.
+- **People policy:** optional and subordinate; a person must not become the main signal.
+- **Best fit:** debugging, observability, code review, diagnosis, incident analysis.
 
 ## Character Plus Concept
 
-Use when the creator persona or platform benefits from personality.
+- **Communication job:** use the creator's personality to open a concept or opinion.
+- **Default template:** `Character Plus Concept`.
+- **Composition:** one expressive person or portrait plus one equally legible technical or conceptual proof point.
+- **People policy:** required unless the user explicitly overrides it.
+- **Best fit:** opinions, experience, project retrospectives, creator-led explanations, Shorts, Reels, and personality-led videos.
 
-- Let the person or character act as an entry point.
-- Keep the technical metaphor equally visible.
-- Use expression to support the concept, not replace it.
+## Selection rule
 
-Best for: Bilibili, YouTube, Shorts, Reels, TikTok.
+1. Choose the Cover Type from the video's communication job.
+2. Use its default Cover Template unless the user selects another compatible template.
+3. Apply a Style Recipe only after the type and template are fixed.
+4. Choose one People Reference according to the type's people policy, or explicitly choose no person when allowed.
 
-## Prompt Shape
-
-When generating an image prompt, include:
-
-1. Platform and aspect ratio.
-2. Brand anchors from the profile.
-3. Cover hook text.
-4. Main subject and metaphor.
-5. Composition and hierarchy.
-6. Typography direction.
-7. Color system.
-8. Restrictions: no dense code, no tiny text, no unrelated decoration, no copied creator style.
-
-Example:
-
-```text
-Create a 16:9 technical programming video cover. Use a stable creator brand system: left-aligned bold title, thin frame, small creator ID in the lower right, high-contrast charcoal background with electric green accent. Cover text: "Debug The Loop". Main visual: a glowing trace line moving through three simplified code modules, with one breakpoint spotlighted. Professional engineering style, minimal vector illustration, clear mobile readability, one focal subject, no dense code, no tiny labels, no full architecture diagram.
-```
+Do not treat a Cover Type as a fixed creator layout. The Brand Profile, Platform Adapter, title, and visual metaphor still change the final composition.
