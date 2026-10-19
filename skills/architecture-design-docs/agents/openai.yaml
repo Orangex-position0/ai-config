@@ -1,0 +1,4 @@
+interface:
+  display_name: "Architecture & Design Docs"
+  short_description: "Maintain architecture maps and module design docs"
+  default_prompt: "Use /architecture-design-docs to inspect the current repository and propose evidence-backed architecture or module design document updates."
