@@ -45,22 +45,22 @@ Test command policy:
 
 - Prefer `cargo nextest run --locked` for new and existing projects.
 - Use `cargo test --locked` only when `cargo-nextest` is unavailable and installing it is not appropriate or approved.
-- Use raw Cargo commands in `prek.toml` by default.
+- Use raw Cargo commands in the selected hook manager's root config by default.
 - Use `justfile` wrappers only when commands are reused outside hooks or need cross-platform handling.
 
 ## Hooks
 
-Keep existing managed hook frameworks such as Lefthook, Husky, Python `pre-commit`, or `prek`.
+When invoked by `project-bootstrap` for a mixed-stack Git repository, use only the manager explicitly selected by the user. If the selection is unresolved, provide Rust check commands without writing or registering hooks. Do not infer consent from an existing manager.
 
-For new Rust projects without a managed hook framework, use `prek` with its native `prek.toml`.
+For standalone Rust projects, keep an existing managed hook framework such as Lefthook, Husky, Python `pre-commit`, or `prek`. For new standalone Rust projects without a managed hook framework, use `prek` with its native `prek.toml`.
 
 Use `.pre-commit-config.yaml` only when the project must remain compatible with Python `pre-commit`.
 
 Do not preserve untracked `.git/hooks` scripts as project workflow.
 
-If the project already uses Lefthook, keep it and map the same commands into `lefthook.yml` instead of adding `prek`.
+If `project-bootstrap` passes Lefthook as the user's choice, map the Rust checks from `assets/templates/prek.toml` into the one root `lefthook.yml`; verify the working directory for nested Cargo projects such as `src-tauri/`. If it passes prek, merge the frontend checks into the root `prek.toml`. Preserve existing config until an explicit migration decision resolves any conflict.
 
-Register hooks from the project root:
+For standalone Rust with prek selected, register hooks from the project root:
 
 ```bash
 prek install

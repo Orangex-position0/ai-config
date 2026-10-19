@@ -29,6 +29,8 @@
 
 ## lefthook.yml（物化指令）
 
+Java 单栈推荐 Lefthook；同一 Git 仓库若还有推荐其他管理器的前端或后端，先按 `project-bootstrap` Step 6 由用户显式选择。选定 prek 时，将下述同阶段的 Java 检查转换为 prek local hooks，并与其他栈合并到一份根目录配置；不得另外注册 Lefthook。
+
 直接复制 `java-workflow-standards.md` §3.3 的 YAML 原文，**不要自行改命令**。增量仅一条：
 
 - **Gradle 项目**：把所有 `./mvnw -q xxx` 替换为 `./gradlew -q xxx`，命令名对应关系（Spotless / Checkstyle / SpotBugs / JaCoCo 在 Gradle 里同样是这些插件 task，名字一致）。

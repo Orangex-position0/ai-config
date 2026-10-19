@@ -19,8 +19,9 @@ description: Use when initializing or retrofitting a repository with project sca
 - GitHub issue / PR 模板来自本仓库 `templates/github/`，只在目标项目会开源到 GitHub 时物化。
 - rules 未覆盖的通用编排知识才写进 `references/<stack>.md`；技术栈专属工具链细节由对应 skill 持有。
 - **React 职责边界**：本 skill 只负责检测、编排、hooks 注册和最终验证；Vite + React + TypeScript 的 `src/` 项目结构、路由布局、feature 模块边界、TypeScript-first ESLint 配置、ESLint 架构边界和 Lefthook 命令必须交给 `$react-ts-project-template`，其结构依据是 `react-ts-project-structure.md`。新建 React + TypeScript 项目默认物化 ESLint 配置；已有项目仅在用户要求时添加，且不覆盖既有配置。
+- **Vue 职责边界**：Vite + Vue + TypeScript 的 feature-based `src/` 结构、Vue Router、ESLint、hooks 命令和 CI 细节交给 `$vue-ts-project-template`；本 skill 负责检测、编排、hooks 注册和最终验证。新建项目使用 `create-vue` 的工具链，已有项目不覆盖配置。
 - **Rust 职责边界**：本 skill 只物化通用文档模板与 GitHub 开源模板；检测到独立 Rust 项目后，Cargo 工具链、hooks、CI、`rust-toolchain.toml`、`rustfmt.toml`、Clippy、`Cargo.lock` 策略和 Rust 目录结构必须交给 `$rust-workflow`。
-- **Tauri 职责边界**：检测到 Tauri v2 时按 `references/tauri.md` 识别为 React + TypeScript + Rust 组合栈；前端委托 `$react-ts-project-template`，`src-tauri/` 委托 `$rust-workflow`，不把它拆成两个独立项目处理。
+- **Tauri 职责边界**：检测到 Tauri v2 且前端为 React + TypeScript 时，按 `references/tauri.md` 编排，前端委托 `$react-ts-project-template`，`src-tauri/` 委托 `$rust-workflow`。根目录 hook 框架须按 Step 6 的冲突流程确认。Vue + Tauri 尚无组合栈流程；识别到时先说明范围，不套用 React 模板。
 - **GitHub Actions 边界**：本 skill 可按技术栈生成最小 `.github/workflows/ci.yml`；不生成 CD、release、发布、coverage upload、Docker build/push 或定时任务。检测到 Rust 或 Tauri 时委托对应 workflow skill。
 - 锚点统一用「文件路径 + 章节标题」，不用行号——rules 迭代频繁，行号必然腐化。
 - 修改本 skill 后，用 `references/evals.md` 做人工回归检查。
@@ -36,22 +37,23 @@ description: Use when initializing or retrofitting a repository with project sca
    - `en`：English templates，适合开源项目、国际协作、英文 README / docs 项目。
    用户未回答前，不执行后续步骤。
 2. 确认目标项目根目录。若不含 `.git/`，先提示 `git init`。
-3. 检测技术栈信号（按优先级）：
+3. 检测技术栈信号。记录同一 Git 仓库内命中的所有前后端技术栈；下列顺序只用于区分 Tauri 与独立 Rust，不得因先命中 Java 就忽略 Vue/React：
    - `pom.xml` / `build.gradle*` / `**/*.java` → **Java/Spring**
-   - `src-tauri/tauri.conf.json` + `src-tauri/Cargo.toml` 的 Tauri v2 依赖，或 `package.json` 含 Tauri v2 `@tauri-apps/cli` / `tauri dev` / `tauri build` 且存在 `src-tauri/` → **Tauri v2（React+TS+Rust）**
-   - `package.json` 且含 `vite`，或 `**/*.tsx` → **React+TS**
+   - `src-tauri/tauri.conf.json` + `src-tauri/Cargo.toml` 的 Tauri v2 依赖，或 `package.json` 含 Tauri v2 `@tauri-apps/cli` / `tauri dev` / `tauri build` 且存在 `src-tauri/` → **Tauri v2**；检查前端框架，React+TS 才进入 `references/tauri.md`，Vue 前端先报告未覆盖的组合栈。
+   - `package.json` 含 `vue` 与 `vite`，或同时存在 `package.json` 与 `**/*.vue` → **Vue**；有 `typescript` 依赖或 `.vue` 中有 `lang="ts"` 才进入 **Vue+TS**，否则询问。
+   - `package.json` 含 `react` 与 `vite`，或同时存在 `package.json` 与 React `**/*.tsx` → **React**；有 `typescript` 依赖才进入 **React+TS**，否则询问。
    - `Cargo.toml` / `**/*.rs` → **Rust**
    - `pyproject.toml` / `requirements*.txt` / `setup.py` / `setup.cfg` / `**/*.py` → **Python**
    - 以上皆无 → 主动询问用户；若用户也不指定，则退化为「仅文档模板」，并在收尾说明跳过技术栈 hooks 与目录骨架。
 4. 判断是否存在 API/接口契约需求，满足任一条件即视为需要：
    - 用户明确提到「接口」「API」「前后端分离」「后端调用」「OpenAPI」「Swagger」。
    - Java/Spring 项目含 `Controller` / `RestController` / `RouterFunction` / `application*.yml` 等 Web 信号。
-   - React/TypeScript 项目含 `src/app/api/`、`pages/api/`、`server/`、`api/`、`openapi*.yaml`、`swagger*.yaml` 等信号。
+   - React/Vue + TypeScript 项目含 `src/app/api/`、`pages/api/`、`server/`、`api/`、`openapi*.yaml`、`swagger*.yaml` 等信号。
    - Python 项目含 `fastapi`、`flask`、`django`、`litestar`、`starlette`、`openapi*.yaml`、`swagger*.yaml`、`src/**/api/` 等 Web/API 信号。
    - Rust 项目含 `axum`、`actix-web`、`rocket`、`poem`、`warp`、`utoipa` 等 Web/API 依赖或路由目录。
 5. 技术栈检测不到时**主动询问**，不要默认假设技术栈；API/接口契约需求不明时只在收尾说明中标记跳过，不为此单独打断。
 
-→ 验证：已确定 `<language>`、`<project-root>`、技术栈，以及是否需要 API 文档模板。
+→ 验证：已确定 `<language>`、`<project-root>`、同一 Git 仓库中的全部技术栈，以及是否需要 API 文档模板。
 
 ### Step 2 · 读取 rules 质量约束与本 skill 模板
 
@@ -121,8 +123,9 @@ description: Use when initializing or retrofitting a repository with project sca
 生成内容来自对应技术栈 reference 的「GitHub Actions CI」章节：
 
 - Java/Spring：`references/java.md`。
-- Tauri v2：`references/tauri.md`，由 `$react-ts-project-template` 与 `$rust-workflow` 提供联合 CI 细节。
+- Tauri v2（React+TS 前端）：`references/tauri.md`，由 `$react-ts-project-template` 与 `$rust-workflow` 提供联合 CI 细节。
 - React+TS：`$react-ts-project-template/references/tooling.md`。
+- Vue+TS：`$vue-ts-project-template/references/tooling.md`。
 - Python：`references/python.md`。
 - Rust：不在本步骤生成，委托 `$rust-workflow`。
 
@@ -130,44 +133,42 @@ description: Use when initializing or retrofitting a repository with project sca
 
 ### Step 6 · 生成 Git hooks 配置
 
-1. Read the stack owner reference to determine the hooks framework and commands:
-   - **Java/Spring** → `references/java.md`，写 `<project-root>/lefthook.yml`
-   - **Tauri v2** → `references/tauri.md`；根目录 `prek` 由 `$rust-workflow` 统一生成、注册和验证，覆盖前端与 `src-tauri/`
-   - **React+TS** → `$react-ts-project-template/references/tooling.md`，由 `$react-ts-project-template` 写 `<project-root>/lefthook.yml`
-   - **Python** → `references/python.md`，写 `<project-root>/lefthook.yml`
-   - **Rust** → 不在本步骤生成 hooks。改为加载并执行 `$rust-workflow`，由它按目标项目状态决定 `prek` / Lefthook、配置文件、安装提示与验证命令。
-2. YAML 注释一律中文、独占行；禁行尾注释。
+1. 按 Git 仓库根目录盘点现有 `lefthook.yml`、`prek.toml`、`.pre-commit-config.yaml`、`.husky/`、`core.hooksPath` 和已注册的 `.git/hooks/`，并读取每个命中技术栈的 hook reference。一个 Git 仓库只编排一份根目录 hook 配置；独立 Git 仓库分别判断。
+2. 单栈且无既有管理器时，使用该栈的推荐候选：Java/React/Vue/Python 为 Lefthook，Rust 为 prek。Tauri 的 React 与 Rust、以及其他前后端组合属于多栈；若候选不同、已有管理器与候选不同、或发现多个管理器，向用户列出候选、现有配置和各自要执行的检查，**要求用户显式指定该 Git 仓库使用哪个 hook 管理器**。回答前继续处理独立的文档和结构工作，但不生成、改写或注册 hooks；不得用“已有工具”代替用户选择。
+3. 用户选定后，按各栈 reference 的命令与阶段把检查合并到**所选管理器的一份根目录配置**。Java 见 `references/java.md`，React 见 `references/react.md`，Vue 见 `references/vue.md`，Python 见 `references/python.md`，Rust 见 `references/rust.md`，Tauri 见 `references/tauri.md`。把选择传给对应子 skill；没有适配命令或必需工具时报告缺口，不编造命令、不生成不可执行的 hook。
+4. 已有同名配置或已注册的另一管理器不得覆盖或卸载；需要迁移时先向用户说明涉及的文件与注册状态，由用户明确决定。YAML 注释一律中文、独占行；禁行尾注释。
 
-→ 验证：Java/React/Python 配置文件含 pre-commit 与 pre-push 两组检查；Tauri 根目录 `prek.toml` 同时覆盖前端与 `src-tauri/`；Rust 已进入 `$rust-workflow` 的验证流程。
+→ 验证：每个 Git 仓库至多注册一个已选管理器；配置中的前后端检查都能追溯到对应 reference 且命令可执行；任何未解决的冲突都保持 hooks 未改动。
 
 ### Step 7 · 创建技术栈目录结构
 
 按 `references/<stack>.md` 的「目录结构」章节创建空目录骨架（用 `.gitkeep` 占位）。仅创建 rules 明确要求的目录，不臆造。
 
 - Java/Spring：由本步骤按 `references/java.md` 处理。
-- Tauri v2：跳过本步骤，按 `references/tauri.md` 分别由 `$react-ts-project-template` 和 `$rust-workflow` 处理。
+- Tauri v2（React+TS 前端）：跳过本步骤，按 `references/tauri.md` 分别由 `$react-ts-project-template` 和 `$rust-workflow` 处理。
 - React+TS：跳过本步骤，加载并执行 `$react-ts-project-template`，由它按 Vite SPA 状态、路由布局选择和 `react-ts-project-structure.md` 处理。
+- Vue+TS：跳过本步骤，加载并执行 `$vue-ts-project-template`，由它按 Vite SPA 状态和 feature-based 结构处理。
 - Python：由本步骤按 `references/python.md` 处理；默认只建 `src/` 与 `tests/`，包名明确时才建 `src/<package>/`。
 - Rust：跳过本步骤，由 `$rust-workflow` 根据 Cargo 项目类型处理。
 
-→ 验证：Java/Spring/Python 骨架目录存在；React+TS 已进入 `$react-ts-project-template` 的结构验证流程；Rust 已进入 `$rust-workflow` 的项目结构验证流程；通用/不确定分支明确跳过目录骨架。
+→ 验证：Java/Spring/Python 骨架目录存在；React+TS 与 Vue+TS 已进入各自模板 skill 的结构验证流程；Rust 已进入 `$rust-workflow` 的项目结构验证流程；通用/不确定分支明确跳过目录骨架。
 
 ### Step 8 · 注册 hooks 框架并验证
 
-按栈注册（**不替用户执行包管理器安装**，跨平台不可靠）。Rust 项目跳过本步骤；Tauri 项目由 `$rust-workflow` 统一注册根目录 `prek`，不进入 Lefthook 分支：
+只注册 Step 6 已确定的管理器（**不替用户执行包管理器安装**）。未选择或仍有既有配置冲突时跳过注册并报告：
 
-| 栈 | 框架 | 安装提示 | 注册 |
-|---|---|---|---|
-| Java/React/Python | Lefthook | `brew` / `scoop` / `go install` 三选一 | `lefthook install` |
-| Tauri v2 | prek | `cargo install prek` | `prek install` |
+| 已选框架 | 安装提示 | 注册 |
+|---|---|---|
+| Lefthook | `brew` / `scoop` / `go install` 三选一 | `lefthook install` |
+| prek | `cargo install prek` | `prek install` |
 
 执行规则：
 
-1. 检测 `lefthook` 是否可用。
-2. 若可用，执行 `lefthook install`，并验证 `.git/hooks/` 下出现对应钩子。
-3. 若不可用，不替用户安装；保留已生成的 `lefthook.yml`，在收尾说明中列出安装选项与待执行命令。
+1. 检测已选管理器是否可用，并复核 `core.hooksPath` 与现有 hook 脚本，避免注册覆盖其他管理器。
+2. 若可用且无冲突，在 Git 仓库根目录执行对应 `install`，验证有效 hooks 目录下出现配置声明的钩子。
+3. 若不可用，保留配置，在收尾说明安装选项与待执行命令；若冲突未解决，保留原状并说明所需用户选择。
 
-→ 验证：`lefthook` 可用时注册命令成功，`.git/hooks/` 下出现对应钩子；不可用时收尾明确标记 hooks 注册未完成。
+→ 验证：已选管理器可用时注册成功且钩子位于 Git 实际使用的 hooks 目录；否则收尾明确标记注册未完成及原因。
 
 **收尾提醒用户**：本地 hook 可被 `git commit --no-verify` 绕过，安全强制必须走 CI（参见 `rules/java/java-workflow-standards.md` §4，该原则跨栈通用）。
 
@@ -185,11 +186,11 @@ AI coding 三件套 + 工程基础设施：
 - `.github/pull_request_template.md` — GitHub PR 模板（仅开源到 GitHub 时）
 - `.github/ISSUE_TEMPLATE/*.md` — GitHub issue 模板（仅开源到 GitHub 时）
 - `.github/workflows/ci.yml` — GitHub Actions 最小 CI（按 GitHub/CI 信号生成；Rust/Tauri 委托对应 workflow skill）
-- `lefthook.yml`（Java/React/Python）— Git hooks 配置
-- `prek.toml`（Tauri v2）— 由 `$rust-workflow` 统一维护，覆盖前端与 `src-tauri/`
+- `lefthook.yml` 或 `prek.toml` — 按 Step 6 为每个 Git 仓库选定一份根目录 Git hooks 配置
 - React TS template 文件（React+TS/Tauri 前端）— 由 `$react-ts-project-template` 按目标项目状态决定
+- Vue TS template 文件（Vue+TS）— 由 `$vue-ts-project-template` 按目标项目状态决定
 - Rust workflow 文件（Rust/Tauri `src-tauri`）— 由 `$rust-workflow` 按目标项目状态决定
-- `<stack>/` 目录骨架（React+TS / Tauri / Rust 除外，分别交给对应 workflow skill）
+- `<stack>/` 目录骨架（React+TS / Vue+TS / Tauri / Rust 除外，分别交给对应 workflow skill）
 - `.git/hooks/` — hooks 框架注册的钩子
 
 可选扩展（用户提及再加，不主动生成）：`.editorconfig`、`README.md`。
@@ -203,18 +204,19 @@ AI coding 三件套 + 工程基础设施：
 ## 执行约束
 
 - **Windows 编码**：调用 Python/Node 工具链时设 `PYTHONUTF8=1`，避免 GBK 编码撞 emoji 报错。
-- **幂等**：目标文件已存在则跳过并提示，绝不覆盖用户既有改动。
+- **幂等**：目标文件已存在则跳过并提示，绝不覆盖用户既有改动。新建 Vue 项目中，本次 `create-vue` 刚生成且确认未修改的演示文件可按 `$vue-ts-project-template` 替换；再次执行时不得重复覆盖。
 - **不臆造命令**：hooks 命令必须来自 rules 或 references，禁止编造工具名或参数。
 - **模板语言必须确认**：无论项目是否明显中文或英文，都必须先问用户选择 `zh-CN` 还是 `en`，不能默认。
-- **少打断**：除模板语言、技术栈检测不到、或 GitHub 开源状态不明但出现 GitHub 信号外，不逐项追问；API/接口契约需求不明时默认跳过并说明原因。
+- **少打断**：除模板语言、技术栈检测不到、GitHub 开源状态不明但出现 GitHub 信号，以及 Step 6 的 hook 管理器冲突外，不逐项追问；API/接口契约需求不明时默认跳过并说明原因。
 
 ## 技术栈分支速查
 
-| 栈 | 检测信号 | references | hooks 框架 |
+| 栈 | 检测信号 | references | hooks 默认候选（多栈冲突时须用户选择） |
 |---|---|---|---|
 | Java/Spring | `pom.xml` / `build.gradle*` | `references/java.md` | Lefthook |
-| Tauri v2 | `src-tauri/` + Tauri 配置/依赖 + 前端 `package.json` | `references/tauri.md` + `$react-ts-project-template` + `$rust-workflow` | 根目录 prek（统一覆盖前端与 Rust） |
-| React+TS | `package.json` + `vite` / `*.tsx` | `references/react.md` + `$react-ts-project-template/references/tooling.md` | Lefthook |
+| Tauri v2 | `src-tauri/` + Tauri 配置/依赖 + 前端 `package.json` | `references/tauri.md` + `$react-ts-project-template` + `$rust-workflow` | React: Lefthook；Rust: prek |
+| React+TS | `package.json` + `react` + `vite` + TypeScript | `references/react.md` + `$react-ts-project-template/references/tooling.md` | Lefthook |
+| Vue+TS | `package.json` + `vue` + `vite` + TypeScript | `references/vue.md` + `$vue-ts-project-template/references/tooling.md` | Lefthook |
 | Rust | `Cargo.toml` / `*.rs` | `references/rust.md` | 委托 `$rust-workflow` |
 | Python | `pyproject.toml` / `requirements*.txt` / `setup.py` / `setup.cfg` / `*.py` | `references/python.md` | Lefthook |
 | 通用/不确定 | 无上述信号 | — | 跳过；收尾说明未生成 hooks |

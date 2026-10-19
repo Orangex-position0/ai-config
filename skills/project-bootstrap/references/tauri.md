@@ -17,8 +17,8 @@ Tauri 检测必须优先于单独的 React+TS 或 Rust 检测。
 检测到 Tauri v2 后：
 
 1. 通用文档模板、GitHub 模板和是否生成 CI 的判断仍由 `project-bootstrap` 处理。
-2. React + TypeScript 前端的目录结构、路由、feature 边界和 ESLint 委托 `$react-ts-project-template`；Tauri 项目不生成 React 专属 `lefthook.yml`。
-3. 项目根目录统一使用 `prek` 管理 hooks；`src-tauri/` 下的 Cargo 配置、hooks、fmt、Clippy、测试、CI、toolchain 和构建策略委托 `$rust-workflow`。
+2. React + TypeScript 前端的目录结构、路由、feature 边界和 ESLint 委托 `$react-ts-project-template`；前端只提供 hooks 检查命令，不单独生成或注册 Lefthook。
+3. 根目录 hook 管理器由 `project-bootstrap` Step 6 请用户显式选择；`src-tauri/` 下的 Cargo 配置、Rust hooks 命令、fmt、Clippy、测试、CI、toolchain 和构建策略委托 `$rust-workflow`。
 4. Tauri 特有的 capabilities、权限、IPC、窗口配置、打包和签名不由 `project-bootstrap` 臆造；只有用户明确要求时才继续处理。
 5. 不把 `src-tauri/` 目录当作普通 Rust library 或 workspace 自动改造，不覆盖既有 Tauri 配置。
 
@@ -31,6 +31,7 @@ Tauri 检测必须优先于单独的 React+TS 或 Rust 检测。
 - 前端工作目录和 package manager；
 - 是否已生成通用文档模板、GitHub 模板和 API 文档；
 - 是否需要联合 GitHub Actions CI。
+- 用户为本 Git 仓库明确选择的 hook 管理器；未选择时不得生成或注册 hooks。
 
 调用 `$rust-workflow` 时传入：
 
@@ -39,16 +40,15 @@ Tauri 检测必须优先于单独的 React+TS 或 Rust 检测。
 - 已确认这是 Tauri v2 的 Rust backend，而不是独立 Rust 服务；
 - 是否已生成通用文档模板、GitHub 模板和 API 文档；
 - 是否需要联合 GitHub Actions CI。
+- 用户为本 Git 仓库明确选择的 hook 管理器；未选择时不得生成或注册 hooks。
 
 ## Hook 选择
 
-Tauri 项目固定选择 `prek`，不同时生成或注册 Lefthook：
+React 前端推荐 Lefthook，Rust 后端推荐 prek，因此同一 Git 仓库必须先由用户显式选择。回答前不生成、改写或注册 hooks。
 
-- 由 `$rust-workflow` 在项目根目录生成或维护 `prek.toml`；
-- `prek.toml` 同时覆盖前端和 `src-tauri/` 的检查；
-- 前端检查可调用 package manager 的 typecheck、lint、test 或 build script；
-- 若已有 Lefthook，先报告冲突并在用户确认前保留，不自动并行启用两个框架；
-- 使用 `prek install` 注册 hooks。
+- 选定后在根目录维护一份所选管理器的配置，同时覆盖前端和 `src-tauri/` 检查；命令分别以 `$react-ts-project-template/references/tooling.md` 与 `$rust-workflow/references/decisions.md` 为准。
+- `project-bootstrap` 统一注册所选管理器；已有另一管理器时，迁移文件及注册状态也须由用户明确决定。
+- 前端或 Rust skill 不得分别注册各自推荐的管理器。
 
 ## 联合验证
 
@@ -65,6 +65,6 @@ Tauri 项目固定选择 `prek`，不同时生成或注册 Lefthook：
 
 - 前端安装依赖并执行 typecheck、lint、test 或 build；
 - Rust 使用 `$rust-workflow` 提供的 Tauri/Rust 检查；
-- hooks 使用根目录 `prek.toml`，不额外生成 `lefthook.yml`。
+- hooks 按用户明确选定的根目录管理器维护，不额外生成第二份配置。
 - 不默认加入多平台打包、签名、发布、Updater 或 release 流程；
 - 已有同名 workflow 时跳过并提示，不覆盖。

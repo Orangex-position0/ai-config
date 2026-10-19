@@ -20,7 +20,7 @@ Do not use this for Next.js, Remix, React Native, Expo, or full monorepo workspa
 3. Copy only the needed template files into the target project. Prefer `npm create vite@latest` for dependency versions, then layer this template over it.
 4. Read `references/project-structure.md` when deciding where code belongs or when reviewing an existing structure.
 5. For a new React + TypeScript project, copy the selected `eslint.config.js` and `eslint.boundaries.config.js` templates. For an existing project, add them only when the user requests ESLint; never overwrite an existing ESLint config.
-6. Read `references/tooling.md` when generating ESLint, Lefthook, or GitHub Actions configuration, then run the smallest available check, usually `npm run typecheck`, `npm run lint`, or the repository's existing `check` script.
+6. Read `references/tooling.md` when generating ESLint, Git hooks, or GitHub Actions configuration. In a mixed-stack Git repository, wait for the hook manager explicitly selected through `project-bootstrap` before writing or registering hooks. Then run the smallest available check, usually `npm run typecheck`, `npm run lint`, or the repository's existing `check` script.
 
 ## Defaults
 

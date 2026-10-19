@@ -38,11 +38,35 @@
 - 识别为 Tauri v2 组合栈，不拆成独立 React 与 Rust 项目。
 - 通用文档模板由 `project-bootstrap` 处理。
 - React + TypeScript 前端结构和 ESLint 委托 `react-ts-project-template`。
-- Tauri 项目不生成 React 专属 `lefthook.yml`，根目录统一选择 `prek`。
-- 根目录 `prek.toml` 以及 `src-tauri/` 的 Rust hooks、CI、toolchain、fmt、Clippy、测试和目录策略委托 `rust-workflow`。
+- React 推荐 Lefthook、Rust 推荐 prek，必须先让用户为同一 Git 仓库显式选择；未回答前不生成、改写或注册 hooks。
+- 用户选择后只在根目录生成一份所选管理器的配置，合并前端与 `src-tauri/` 检查；Rust hooks 命令、CI、toolchain、fmt、Clippy、测试和目录策略委托 `rust-workflow`。
 - 若需要 GitHub Actions CI，生成同时覆盖前端和 `src-tauri/` 的联合检查；不生成多平台打包、签名或 release 流程。
-- 不同时启用 Lefthook 和 prek；已有 Lefthook 时先报告冲突，不自动切换或并行注册。
+- 不同时启用 Lefthook 和 prek；已有任一管理器时仍须显式选择，迁移另行确认，不自动切换或并行注册。
 - 不臆造 Tauri capabilities、IPC、窗口或打包配置，不覆盖既有 Tauri 文件。
+
+## 场景 3a：Vite + Vue + TypeScript repo
+
+输入：目标目录含 `package.json`，依赖有 Vue、Vite、TypeScript，且存在 `.vue` 文件。
+
+期望行为：
+
+- 先询问文档模板语言，继续由 `project-bootstrap` 处理通用文档和 GitHub 判断。
+- 检测为 Vue+TS，不因 Vite 信号进入 React 分支。
+- 将源码、Vue Router、ESLint 和工具链委托 `vue-ts-project-template`。
+- 默认物化 `assets/router-classic/` 的 Feature-based 结构：`app/`、`features/auth/`、`features/document/`、`features/workspace/`、`shared/` 和 `assets/`；空目录有 `.gitkeep`，`src/README.md` 解释职责。
+- 只有 `workspace` 有可运行页面；文档组件名留作示例位置，不生成空实现，也不默认安装 Pinia 或 HTTP 客户端。
+- 新项目使用 `create-vue` 的依赖版本和 ESLint 配置；已有项目不覆盖现有源码或配置。
+- hooks 的 `pre-commit` 使用只读 ESLint 检查暂存的 `.vue`/`.ts`；`pre-push` 执行已有的 Vue 类型检查与构建，构建已含类型检查时只执行一次；测试仅在已有 runner、脚本和测试时加入。
+- Vue 单栈默认 Lefthook；hooks 和 CI 只调用目标项目实际存在的脚本，保留现有同名文件。
+
+## 场景 3b：Tauri v2 + Vue repo
+
+输入：目标目录存在 Tauri v2 配置，前端依赖 Vue 而非 React。
+
+期望行为：
+
+- 不把 Vue 前端送入 React 模板或 React + Rust 的组合流程。
+- 报告组合栈暂未覆盖；能独立完成的通用文档仍按主流程处理。
 
 ## 场景 4：Rust repo
 
@@ -98,3 +122,15 @@
 - 能确定 base package 时生成 `package-info.java` 并使用 `@NullMarked`；不能确定时不臆造 `com.example`。
 - 不生成 NullAway demo class。
 - 接入后只用项目 wrapper 做最小验证；无 wrapper 或依赖下载不可用时报告未本地验证，不裸跑 `mvn` / `gradle`。
+
+## 场景 8：同一 Git 仓库的 Vue + TypeScript 与 Rust 后端
+
+输入：根目录有 Vue `package.json`，后端目录有 `Cargo.toml`；Vue 推荐 Lefthook，Rust 推荐 prek。分别模拟已有 `lefthook.yml`、已有 `prek.toml`、两者都存在及均不存在。
+
+期望行为：
+
+- 同时识别 Vue 与 Rust，不因先命中一个栈而遗漏另一个。
+- 向用户说明两种候选、现有配置以及 Vue 的 lint、类型检查、构建和 Rust 的检查，要求显式选一个根目录管理器；已有配置不能替代用户选择。
+- 用户未答前可生成独立文档和结构，但 hooks 文件及注册状态保持原样。
+- 用户选定后将两个栈的检查合并到一份根目录配置，向两个子 skill 传递同一选择；若需迁移已有管理器，另请用户明确决定，禁止覆盖或并行注册。
+- 若前后端各自是独立 Git 仓库，分别按各仓库单栈规则处理，不制造跨仓库冲突。

@@ -41,7 +41,7 @@ Then:
 
 1. Classify the project as single crate or workspace, library or binary application, and minimal, application/service, or production/public level.
 2. Read `references/decisions.md` before choosing workspace layout, hooks, lint config, CI, Cargo.lock policy, release profile, linker, cache, profiling, or cross-build behavior.
-3. Preserve existing workflow, hook, toolchain, formatting, lint, and CI configuration unless it violates the rule.
+3. Preserve existing workflow, hook, toolchain, formatting, lint, and CI configuration unless it violates the rule. When `project-bootstrap` delegates a mixed-stack Git repository, honor its user-selected hook manager; if unresolved, leave hooks unchanged and return the Rust checks for later merging.
 4. Explain any non-obvious modification before making it.
 5. Add only missing workflow pieces with useful content; never create empty placeholder files.
 6. Keep existing CI structure; add Rust checks to it instead of creating duplicate workflows.
@@ -57,7 +57,7 @@ Copy templates only when the target file is missing. Merge manually when the tar
 
 | Template | Use when |
 | --- | --- |
-| `assets/templates/prek.toml` | New Rust project without a managed hook framework |
+| `assets/templates/prek.toml` | New standalone Rust project without a managed hook framework, or mixed-stack repository whose user selected prek; merge other stack checks before registration |
 | `assets/templates/rust-toolchain.toml` | Project does not already pin a Rust toolchain |
 | `assets/templates/rustfmt.toml` | Project does not already configure rustfmt |
 | `assets/templates/github-actions-ci.yml` | New GitHub Actions CI workflow is needed |

@@ -24,6 +24,7 @@
 - 是否已生成 GitHub issue / PR 模板
 - 是否需要生成 GitHub Actions CI，以及触发该决定的用户输入或 GitHub 信号
 - 是否检测到 API/接口契约需求
+- 同一 Git 仓库的其他技术栈、已有 hook 管理器，以及用户明确选定的管理器（若有冲突）；`rust-workflow` 不得重选
 
 其余 Rust 策略由 `$rust-workflow` 按目标项目文件自动检测；只有当选择会改变项目策略、增加 CI 成本、需要全局或网络安装、或无法从仓库推断时再问用户。
 

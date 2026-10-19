@@ -13,6 +13,10 @@
 
 `project-bootstrap` 不自行创建 React `src/` 目录骨架，不自行决定 `src/pages` + `src/app/router` 与 `src/routes` 的路由布局，也不维护 React 专属 ESLint 或 Lefthook 命令。
 
+## Git hooks 交接
+
+React 单栈项目推荐 Lefthook，具体 `pre-commit`、`pre-push`、`commit-msg` 命令与依赖检查只维护在 `$react-ts-project-template/references/tooling.md` § lefthook.yml。若同一 Git 仓库还有推荐 prek 的后端，先按 `project-bootstrap` Step 6 请用户显式选择，再让前端与后端检查进入所选管理器的一份根目录配置；不得单独注册前端 Lefthook。
+
 ## rules 指针
 
 `<rules>` 由 `project-bootstrap` 定义为当前宿主的 rules 根目录。先解析下列 rule key，再按「使用锚点」读取对应章节。
@@ -44,3 +48,4 @@ TS 编译基线与 `react-ts-project-template/references/project-structure.md` �
 - 是否已生成 GitHub issue / PR 模板
 - 是否需要生成 GitHub Actions CI
 - 是否检测到 API/接口契约需求
+- Git 仓库根目录、已有 hook 管理器，以及用户明确选定的管理器（若有冲突）

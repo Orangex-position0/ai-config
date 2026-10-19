@@ -19,6 +19,8 @@
 
 ## lefthook.yml
 
+React 单栈推荐 Lefthook。同一 Git 仓库若还有推荐 prek 的后端，先由 `project-bootstrap` Step 6 请用户显式选择；未选择前不生成或注册 hooks。若用户选择 prek，把下面已验证可用的检查按相同阶段转换为 `repo = "local"`、`language = "system"` 的 hooks，与后端检查合并到根目录一份 `prek.toml`。需要文件参数的检查设置 `files`；typecheck、test 等全项目检查设置 `pass_filenames = false`，并按需设置 `always_run = true`。不得额外写或注册 `lefthook.yml`。
+
 React + TypeScript 项目的推荐配置：
 
 ```yaml

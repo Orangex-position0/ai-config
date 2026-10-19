@@ -70,6 +70,8 @@ package = false
 
 ## lefthook.yml（增量，rules 未覆盖）
 
+Python 单栈推荐 Lefthook；同一 Git 仓库若还有推荐其他管理器的技术栈，先按 `project-bootstrap` Step 6 由用户显式选择。选定 prek 时，将下述同阶段的 Python 检查转换为 prek local hooks，并与其他栈合并到一份根目录配置；不得另外注册 Lefthook。
+
 Python 推荐配置：
 
 ```yaml
