@@ -51,6 +51,14 @@ skill-name/
 | 中文求职、简历、面试、投递 | [asu](./asu/SKILL.md), [asu-recap](./asu-recap/SKILL.md), [project-guide](./project-guide/SKILL.md), [make-resume](./make-resume/SKILL.md), [asu-resume](./asu-resume/SKILL.md), [job-apply](./job-apply/SKILL.md), [interview](./interview/SKILL.md), [offer](./offer/SKILL.md), [contributor](./contributor/SKILL.md) |
 | 创建或维护 AI 配置资源 | [skill-creator](./skill-creator/SKILL.md), [rule-creator](./rule-creator/SKILL.md), [health](./health/SKILL.md) |
 
+## dbskill 工具箱
+
+已导入 [dontbesilent2025/dbskill](https://github.com/dontbesilent2025/dbskill) 的全部 37 个 Skill（v2.18.50，commit `f24ea08ae4b50660a1575554eb58903fa6d60f01`），位于本目录的 `dbs` 和 `dbs-*` 子目录，包含各 Skill 的配套脚本、参考资料与许可证。不包含上游完整推文集和知识原子库，不执行全局安装。
+
+主入口：[dbs](./dbs/SKILL.md)。首次使用可输入 `/dbs 新手入门`；商业诊断使用 [dbs-diagnosis](./dbs-diagnosis/SKILL.md)，内容创作使用 [dbs-content](./dbs-content/SKILL.md)，标题、封面与开头使用 [dbs-title-cover-intro](./dbs-title-cover-intro/SKILL.md)。具体调用名称以 Agent 实际显示为准。
+
+上游采用 **CC BY-NC 4.0**，各 Skill 目录内保留 `LICENSE`；商业用途需联系原作者授权。
+
 ## 按领域索引
 
 ### 代码审查与诊断
