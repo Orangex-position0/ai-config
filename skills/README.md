@@ -1,5 +1,9 @@
 # Skills
 
+## 手绘风格图片与封面
+
+- [handdraw-style-prompter](./handdraw-style-prompter/SKILL.md)：来自 [yang0/handraw-style](https://github.com/yang0/handraw-style) 的完整手绘风格、版式、配色和参考图库，用于生成图片提示词与设计文章、视频封面。图片生成需要另有生图工具；视频制作不包含在此包内。使用时遵守包内 `LICENSE` 的署名要求。
+
 本目录是 `ai-config` 的 Skill 集合，用于在 Claude Code、Codex 和其他兼容 `SKILL.md` 的 agent 中复用工作流、领域规则和任务套路。
 
 这个目录不是单独的 skill marketplace；它是个人 AI 配置发行版的一部分。这里既包含自建 skill，也包含 vendored 外部 skill。来源与 hash 状态由仓库根目录的 `skills-lock.json` 和 `npm run skills:inventory` 辅助查看。

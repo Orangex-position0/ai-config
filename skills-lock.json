@@ -1,6 +1,12 @@
 {
   "version": 1,
   "skills": {
+    "handdraw-style-prompter": {
+      "source": "yang0/handraw-style",
+      "sourceType": "github",
+      "skillPath": "SKILL.md",
+      "computedHash": "2a47a3f145985d1414ea35b08d864145a90861ff7ada11074768c8950ce83640"
+    },
     "ask-matt": {
       "source": "mattpocock/skills",
       "sourceType": "github",
