@@ -4,7 +4,7 @@ import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
 import { createHash, randomUUID } from 'node:crypto';
-import { fileURLToPath, pathToFileURL } from 'node:url';
+import { fileURLToPath } from 'node:url';
 
 const sharedDirs = ['rules', 'skills', 'agents', 'commands', 'templates', 'assets', 'references', 'scripts'];
 const fileScopes = new Set(['rules', 'agents', 'commands', 'scripts']);
@@ -546,4 +546,8 @@ export function main(argv = process.argv.slice(2), root = path.resolve(path.dirn
   return exitCode;
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) process.exitCode = main();
+// Node.js 会解析入口的目录链接；比较真实路径，避免 /var 等别名使 CLI 静默跳过执行。
+if (process.argv[1] && fs.existsSync(process.argv[1]) &&
+    fs.realpathSync.native(fileURLToPath(import.meta.url)) === fs.realpathSync.native(process.argv[1])) {
+  process.exitCode = main();
+}
