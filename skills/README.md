@@ -59,6 +59,15 @@ skill-name/
 
 上游采用 **CC BY-NC 4.0**，各 Skill 目录内保留 `LICENSE`；商业用途需联系原作者授权。
 
+## GPUI Kit 官方 Skill
+
+已从 [longbridge/gpui-kit](https://github.com/longbridge/gpui-kit) 导入两个官方 Skill（commit `611b55e331170ca375214d580b6c5409db858f83`），保留上游正文及参考资料，未作修改：
+
+- [gpui-kit](./gpui-kit/SKILL.md)：Rust 桌面应用配置、组件使用、GPUI 机制与编码规范。
+- [gpui-kit-design-guides](./gpui-kit-design-guides/SKILL.md)：桌面 UI 的布局、视觉层级、交互与设计规范，与 `gpui-kit` 配套使用。
+
+各目录保留上游 `LICENSE-APACHE` 和 `LICENSE-DOCS.md`。Apache-2.0 适用于仓库内容；文档许可声明范围内的 GPUI Kit 文档另提供 CC BY 4.0 选项，具体边界以上游许可声明为准。
+
 ## 按领域索引
 
 ### 代码审查与诊断

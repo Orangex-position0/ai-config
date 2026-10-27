@@ -1,6 +1,8 @@
 {
   "version": 1,
   "skills": {
+    "gpui-kit-design-guides": {"source": "longbridge/gpui-kit", "sourceType": "github", "skillPath": "skills/gpui-kit-design-guides/SKILL.md", "computedHash": "19854dca8933228f3285a9f565585aad5ebb39ffe63b68e48b2cf8b33b48c69a"},
+    "gpui-kit": {"source": "longbridge/gpui-kit", "sourceType": "github", "skillPath": "skills/gpui-kit/SKILL.md", "computedHash": "ed4ff2a48ca0abcda07d460cd0d1fb67dcc3caf209c3253e35e49ddf8ae95e01"},
     "handdraw-style-prompter": {
       "source": "yang0/handraw-style",
       "sourceType": "github",
