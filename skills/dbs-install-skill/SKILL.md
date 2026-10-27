@@ -1,6 +1,12 @@
 ---
 name: dbs-install-skill
 description: 将单个 Skill 或 Skill 集合安装到通用 Agents、Claude Code、Codex、WorkBuddy、Grok、Hermes Agent、Kiro、Qwen Code、Cline 等 Agent。用户要求跨 Agent 安装、同步、查看、去重或卸载 Skill 时使用。
+metadata:
+  dbs-handoff: |
+    - 一个 Skill 名称、路径或 Skill 集合目录，要安装或同步 → 在本机已有的各 Agent 里建立入口链接，本机有 Grok 时另建适配层，清理指向同一来源的重复链接，交出各入口和清理结果；目标位置已有真实目录或其他来源时停下等用户确认
+    - 已安装的 Skill，要查看状态 → 安装状态和发现的重复入口
+    - 已安装的 Skill，要卸载 → 移除各入口链接和 Grok 适配层，保留 Skill 源文件
+    - 不交出：Skill 内容修改、项目规则文件迁移、为未安装的 Agent 新建目录、覆盖或删除真实目录
 ---
 
 # dbs-install-skill：多端 Skill 安装与同步
@@ -84,9 +90,9 @@ Unix-like 系统使用符号链接；Windows 的 Bash／MSYS 环境使用目录 
 
 用户可能提供：
 
-- Skill 名称：`dbs-hook`；
-- 相对路径：`skills/dbs-hook`；
-- 绝对路径：`/Users/.../dbskill/skills/dbs-hook`；
+- Skill 名称：`dbs-diagnosis`；
+- 相对路径：`skills/dbs-diagnosis`；
+- 绝对路径：`/Users/.../dbskill/skills/dbs-diagnosis`；
 - 外部 Skill：`/Users/.../external-skills/lark-doc`；
 - Skill 集合目录：`/Users/.../dbskill/skills`；
 - 当前上下文刚创建或刚修改的 Skill。
@@ -109,6 +115,19 @@ Unix-like 系统使用符号链接；Windows 的 Bash／MSYS 环境使用目录 
 
 ---
 
+## 界面元数据闸门
+
+`link` 和 `status` 执行前，脚本从源目录开始逐级向上查找 `AGENTS.md`。找到的 `AGENTS.md` 含有 `<!-- skill-interface-gate: required -->` 标记时，脚本用本 Skill 所在仓库的 `tools/check-skill-interface-metadata.py` 校验源目录：
+
+- 校验失败时，脚本停止，不建立链接，也不查看状态；
+- 校验器不存在时，脚本同样停止；
+- 没有找到该标记时，脚本跳过这一步；
+- `unlink` 不做这项校验。
+
+校验失败时，把校验器的报错回报给用户，不绕过脚本手动建立链接。
+
+---
+
 ## 执行安装
 
 在 dbskill 仓库根目录运行：
@@ -120,7 +139,7 @@ skills/dbs-install-skill/scripts/install-skill.sh link <skill-name-or-path>
 示例：
 
 ```bash
-skills/dbs-install-skill/scripts/install-skill.sh link dbs-hook
+skills/dbs-install-skill/scripts/install-skill.sh link dbs-diagnosis
 skills/dbs-install-skill/scripts/install-skill.sh link skills/my-custom-skill
 skills/dbs-install-skill/scripts/install-skill.sh link skills
 skills/dbs-install-skill/scripts/install-skill.sh link "/absolute/path/to/skill"
@@ -197,11 +216,11 @@ skills/dbs-install-skill/scripts/install-skill.sh unlink <skill-name-or-path>
 - `~/.agents/skills/<name>` 是公共规范入口；
 - Codex 等公共兼容客户端的专属目录中没有同源链接；
 - 专属宿主目标位置若存在，必须是指向当前真源的符号链接或 Junction；
-- Grok 目标位置若存在，必须是本工具生成的 Grok 适配层才允许更新；
+- Grok 目标位置若存在，必须是本工具生成的 Grok 适配层，且指向当前真源或原真源已不存在，才允许更新或移除；
 - 真实目录、真实文件和其他来源链接没有被删除；
 - 源目录没有被删除；
 - `private/` 与 `.private/` 没有被读取、复制、暂存或安装。
 
 ---
 
-完成当前任务后直接结束。只有用户明确询问下一步，且当前环境已经安装 `/dbs` 时，简短提示：「下一步不确定时，可以输入 `/dbs`。」
+完成当前任务后直接结束。用户的请求超出本 Skill 的范围、任务完成后用户的材料里出现明确的后续需求，或用户询问下一步时，用一句话说明还需要哪种能力，不点名其他 Skill；当前环境已经安装 `/dbs` 时，补一句「可以输入 `/dbs`，由它匹配对应的 Skill」。

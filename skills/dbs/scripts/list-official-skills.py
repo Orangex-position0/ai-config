@@ -45,23 +45,64 @@ def read_frontmatter_description(skill_path: Path) -> str:
     return ""
 
 
+def read_frontmatter_handoff(skill_path: Path) -> str:
+    """读取 metadata.dbs-handoff；没有时返回空字符串。"""
+    lines = skill_path.read_text(encoding="utf-8").splitlines()
+    if not lines or lines[0] != "---":
+        return ""
+    in_metadata = False
+    for index, line in enumerate(lines[1:], start=1):
+        if line == "---":
+            break
+        if line.startswith("metadata:"):
+            in_metadata = True
+            continue
+        if in_metadata and line and not line[0].isspace():
+            in_metadata = False
+        if not in_metadata or line.strip() != "dbs-handoff: |":
+            continue
+        key_indent = len(line) - len(line.lstrip())
+        entries: list[str] = []
+        for continuation in lines[index + 1 :]:
+            if continuation == "---":
+                break
+            if not continuation.strip():
+                continue
+            if len(continuation) - len(continuation.lstrip()) <= key_indent:
+                break
+            entries.append(continuation.strip())
+        return "\n".join(entries)
+    return ""
+
+
 def locate_installed_skill(name: str, search_roots: list[Path]) -> Path | None:
+    """按 search_roots 的优先级返回第一份有效副本。
+
+    search_roots 从高到低排列：项目 skills/、与 /dbs 同级的目录、各 Agent 的用户目录。
+    名称不符的副本被忽略；多份有效副本内容不一致时选用优先级最高的一份，并在 stderr 报告冲突。
+    """
     candidates = []
     for root in search_roots:
         candidate = root / name
         path = candidate / "SKILL.md"
-        if path.is_file():
-            content = path.read_text(encoding="utf-8")
-            if f"name: {name}\n" not in content:
-                print(f"跳过定义名称冲突的候选：{name}", file=sys.stderr)
-                return None
-            candidates.append(candidate.resolve())
+        if not path.is_file():
+            continue
+        content = path.read_text(encoding="utf-8")
+        if f"name: {name}\n" not in content:
+            print(f"忽略定义名称不符的副本：{candidate}", file=sys.stderr)
+            continue
+        resolved = candidate.resolve()
+        if resolved not in candidates:
+            candidates.append(resolved)
     if not candidates:
         return None
     digests = {hashlib.sha256((x / "SKILL.md").read_bytes()).hexdigest() for x in candidates}
     if len(digests) != 1:
-        print(f"跳过多份定义不一致的候选：{name}", file=sys.stderr)
-        return None
+        others = "、".join(str(x) for x in candidates[1:])
+        print(
+            f"{name} 有多份内容不一致的副本，已选用 {candidates[0]}；其余副本：{others}",
+            file=sys.stderr,
+        )
     return candidates[0]
 
 
@@ -120,6 +161,7 @@ def main() -> int:
                 "name": name,
                 "description": read_frontmatter_description(skill_path)
                 or entry.get("description", ""),
+                "handoff": read_frontmatter_handoff(skill_path),
                 "source": str(skill_dir_path),
             }
         )

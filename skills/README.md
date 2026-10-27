@@ -53,9 +53,11 @@ skill-name/
 
 ## dbskill 工具箱
 
-已导入 [dontbesilent2025/dbskill](https://github.com/dontbesilent2025/dbskill) 的全部 37 个 Skill（v2.18.50，commit `f24ea08ae4b50660a1575554eb58903fa6d60f01`），位于本目录的 `dbs` 和 `dbs-*` 子目录，包含各 Skill 的配套脚本、参考资料与许可证。不包含上游完整推文集和知识原子库，不执行全局安装。
+已导入 [dontbesilent2025/dbskill](https://github.com/dontbesilent2025/dbskill) 的全部 35 个 Skill（v3.0.2，commit `707725c8ecdffa24f5b7fba75b9bbaa89e068d75`），位于本目录的 `dbs` 和 `dbs-*` 子目录，包含各 Skill 的配套脚本、参考资料与许可证。不包含上游完整推文集和知识原子库，不执行全局安装。
 
-主入口：[dbs](./dbs/SKILL.md)。首次使用可输入 `/dbs 新手入门`；商业诊断使用 [dbs-diagnosis](./dbs-diagnosis/SKILL.md)，内容创作使用 [dbs-content](./dbs-content/SKILL.md)，标题、封面与开头使用 [dbs-title-cover-intro](./dbs-title-cover-intro/SKILL.md)。具体调用名称以 Agent 实际显示为准。
+主入口：[dbs](./dbs/SKILL.md)。首次使用可输入 `/dbs 新手入门`；商业诊断使用 [dbs-diagnosis](./dbs-diagnosis/SKILL.md)，内容创作使用 [dbs-content](./dbs-content/SKILL.md)，标题、封面与开头使用 [dbs-title-cover-intro](./dbs-title-cover-intro/SKILL.md)。平铺直叙的产品、功能与更新说明使用 [dbs-plain-writing](./dbs-plain-writing/SKILL.md)。具体调用名称以 Agent 实际显示为准。
+
+v3.0.2 已移除上游下线的 `dbs-agent-migration`、`dbs-hook` 和 `dbs-xhs-title`；标题、封面与开头统一使用 `dbs-title-cover-intro`。
 
 上游采用 **CC BY-NC 4.0**，各 Skill 目录内保留 `LICENSE`；商业用途需联系原作者授权。
 
