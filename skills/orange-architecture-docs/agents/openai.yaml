@@ -1,0 +1,4 @@
+interface:
+  display_name: "Orange Architecture Docs"
+  short_description: "Maintain architecture and design docs with optional C4 views"
+  default_prompt: "Use /orange-architecture-docs to inspect the current repository and propose evidence-backed architecture, module design, or C4 view updates."
