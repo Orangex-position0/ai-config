@@ -4,12 +4,13 @@
 import { existsSync } from "node:fs";
 import process from "node:process";
 import path from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   REPO_ROOT,
   SKILLS_DIR,
-  isQuotedYamlScalar,
   listSkillDirs,
   parseFrontmatter,
+  parseYamlMapping,
   printJson,
   readText,
   relativeToRoot,
@@ -30,33 +31,28 @@ function help() {
   console.log("Usage: check-skills.mjs [--json]");
 }
 
-function validateFrontmatter(skill, content) {
+export function validateFrontmatter(skill, content) {
   const failures = [];
-  const frontmatter = parseFrontmatter(content);
+  let frontmatter;
+  try {
+    frontmatter = parseFrontmatter(content);
+  } catch (err) {
+    return [`${skill.name}: invalid YAML frontmatter: ${err.message}`];
+  }
   if (!frontmatter) {
     failures.push(`${skill.name}: SKILL.md is missing YAML frontmatter`);
     return failures;
   }
 
-  const { fields, raw } = frontmatter;
-  if (!fields.name) {
+  const { fields } = frontmatter;
+  if (typeof fields.name !== "string" || !fields.name.trim()) {
     failures.push(`${skill.name}: frontmatter missing name`);
   } else if (fields.name !== skill.name) {
     failures.push(`${skill.name}: frontmatter name "${fields.name}" does not match folder name`);
   }
 
-  if (!fields.description) {
+  if (typeof fields.description !== "string" || !fields.description.trim()) {
     failures.push(`${skill.name}: frontmatter missing description`);
-  }
-
-  const descriptionLine = raw
-    .split(/\r?\n/)
-    .find((line) => /^description:\s*/.test(line));
-  if (descriptionLine) {
-    const value = descriptionLine.replace(/^description:\s*/, "");
-    if (!isQuotedYamlScalar(value) && /:\s/.test(value)) {
-      failures.push(`${skill.name}: description contains ": " and must be quoted`);
-    }
   }
 
   return failures;
@@ -111,6 +107,14 @@ async function main() {
     }
     const content = await readText(skill.skillPath);
     failures.push(...validateFrontmatter(skill, content));
+    const agentsYaml = path.join(skill.dir, "agents", "openai.yaml");
+    if (existsSync(agentsYaml)) {
+      try {
+        parseYamlMapping(await readText(agentsYaml));
+      } catch (err) {
+        failures.push(`${skill.name}: invalid agents/openai.yaml: ${err.message}`);
+      }
+    }
   }
   failures.push(...(await validateReadmeLinks()));
 
@@ -133,7 +137,9 @@ async function main() {
   if (!result.ok) process.exit(1);
 }
 
-main().catch((err) => {
-  console.error(`check-skills: ${err.message}`);
-  process.exit(1);
-});
+if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+  main().catch((err) => {
+    console.error(`check-skills: ${err.message}`);
+    process.exitCode = 1;
+  });
+}

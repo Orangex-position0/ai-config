@@ -2,6 +2,7 @@ import { createHash } from "node:crypto";
 import { existsSync } from "node:fs";
 import { readFile, readdir } from "node:fs/promises";
 import path from "node:path";
+import { parseDocument } from "yaml";
 import { fileURLToPath } from "node:url";
 
 const here = path.dirname(fileURLToPath(import.meta.url));
@@ -41,47 +42,20 @@ export async function readText(file) {
   return readFile(file, "utf8");
 }
 
+export function parseYamlMapping(content) {
+  const document = parseDocument(content, { uniqueKeys: true, strict: true });
+  if (document.errors.length) throw new Error(document.errors.map((error) => error.message).join("; "));
+  const fields = document.toJS({ maxAliasCount: 100 });
+  if (!fields || typeof fields !== "object" || Array.isArray(fields)) {
+    throw new Error("YAML must contain a mapping");
+  }
+  return fields;
+}
+
 export function parseFrontmatter(content) {
-  const match = /^---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(content);
+  const match = /^\uFEFF?---\r?\n([\s\S]*?)\r?\n---(?:\r?\n|$)/.exec(content);
   if (!match) return null;
-  const fields = {};
-  const lines = match[1].split(/\r?\n/);
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i];
-    const field = /^([A-Za-z0-9_-]+):\s*(.*)$/.exec(line);
-    if (!field) continue;
-    const key = field[1];
-    const value = field[2].trim();
-    if (value === ">" || value === "|") {
-      const block = [];
-      while (i + 1 < lines.length && /^(?:\s+|$)/.test(lines[i + 1])) {
-        i += 1;
-        block.push(lines[i].trim());
-      }
-      fields[key] = block.filter(Boolean).join(value === ">" ? " " : "\n");
-    } else {
-      fields[key] = stripYamlScalar(value);
-    }
-  }
-  return { raw: match[1], fields };
-}
-
-function stripYamlScalar(value) {
-  if (
-    (value.startsWith('"') && value.endsWith('"')) ||
-    (value.startsWith("'") && value.endsWith("'"))
-  ) {
-    return value.slice(1, -1);
-  }
-  return value;
-}
-
-export function isQuotedYamlScalar(value) {
-  const trimmed = value.trim();
-  return (
-    (trimmed.startsWith('"') && trimmed.endsWith('"')) ||
-    (trimmed.startsWith("'") && trimmed.endsWith("'"))
-  );
+  return { raw: match[1], fields: parseYamlMapping(match[1]) };
 }
 
 export async function sha256File(file) {

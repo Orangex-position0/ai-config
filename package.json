@@ -14,9 +14,13 @@
         "skills:check": "node scripts/check-skills.mjs",
         "sources:check": "node scripts/check-sources.mjs",
         "skills:inventory": "node scripts/inventory-skills.mjs",
-        "validate": "npm run skills:check && npm run sources:check"
+        "validate": "npm run skills:check && npm run sources:check",
+        "test": "node --test scripts/tests/install.test.mjs scripts/tests/skills.test.mjs"
     },
     "engines": {
         "node": ">=20"
+    },
+    "devDependencies": {
+        "yaml": "2.9.0"
     }
 }
