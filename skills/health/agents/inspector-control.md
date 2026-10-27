@@ -7,10 +7,10 @@ Input bundle: settings.local.json, GITIGNORE, CLAUDE.md (global), CLAUDE.md (loc
 Hooks checks:
 - Hooks are optional. Recommend one only when a repeated deterministic failure or a high-consequence safety boundary is better enforced mechanically than remembered in prose.
 - If hooks exist, verify schema:
-  - Each entry needs `matcher` and a `hooks` array
-  - Each hook needs `type: "command"` and `command`
+  - Each event group needs a `hooks` array; validate `matcher` only for events that support filtering.
+  - Validate handlers by runtime and type: command hooks need `command`; MCP-tool hooks need `server` and `tool`. Prompt, agent, HTTP, and unfamiliar types need the matching runtime contract, not a command-only rejection.
   - File path may be available via `$CLAUDE_TOOL_INPUT_FILE_PATH`
-  - Missing `matcher` fires on all tool calls
+  - Interpret `matcher` by event; lifecycle hooks such as Stop do not require a tool matcher.
 - Flag full test suites on every edit, prefer fast checks for immediate feedback.
 - Flag commands without output truncation, unbounded output floods context.
 - Flag commands without explicit failure surfacing.
@@ -30,13 +30,12 @@ MCP configuration:
 - If `~/.claude/projects/.../tool-results/*` denials show breakage, output a `python3` one-liner that appends the narrowest missing path
 
 Model name validation:
-- Check settings.local.json for `model` fields. Valid model IDs follow the pattern `claude-*` (e.g., `claude-opus-4-6`, `claude-sonnet-4-6`, `claude-haiku-4-5-20251001`). Any non-`claude-*` model ID (e.g., a provider-specific alias or outdated name) is [!] -- a wrong model name silently wastes the entire session with no output.
-- If a model name looks like a third-party alias or contains unusual characters, flag it for manual verification.
+- Check configured `model` values against the selected runtime and provider. Official aliases such as `sonnet`, `opus`, and `haiku`, full model IDs, and provider deployment names have different valid forms; no universal prefix test establishes validity. Use current runtime documentation or an observed resolution error. Unknown names remain unverified, not Critical.
 
 Prompt cache hygiene:
 - Check CLAUDE.md or hooks for dynamic timestamps/dates in system context, they break prompt cache
 - Check if hooks or skills non-deterministically reorder tool definitions
-- Flag mid-session model switches like Opus→Haiku→Opus, they rebuild cache and can cost more
+- Flag mid-session model switches (Opus to Haiku and back), they rebuild cache and can cost more
 - If model switching is detected, recommend subagents instead
 
 Three-layer defense consistency:

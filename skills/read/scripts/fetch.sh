@@ -6,7 +6,8 @@
 #   third party. Best quality when readability-lxml + html2text are pip-
 #   installed; degrades to a stdlib-only stripper otherwise.
 #
-#   With --use-proxy: tries local first, then defuddle.md, then r.jina.ai.
+#   With --use-proxy: tries local first, then the DeepSeek Fetch API when
+#   DEEPSEEK_API_KEY is set, then defuddle.md, then r.jina.ai.
 #   Use this for JS-heavy pages, X/Twitter, paywalls, or anything the local
 #   extractor cannot reach. Be aware: the URL is sent to those third-party
 #   services and may be cached or logged. Never feed sensitive URLs through
@@ -80,13 +81,24 @@ if OUT=$(python3 "$SCRIPT_DIR/fetch_local.py" "$URL" 2>"$LOCAL_ERR"); then
 fi
 cat "$LOCAL_ERR" >&2 2>/dev/null || true
 
-# Without --use-proxy, stop here. URL never leaves the machine.
+# Without --use-proxy, stop here. No third-party extraction service is used.
 if [ "$USE_PROXY" -eq 0 ]; then
   echo "[fetch] status=fail reason=\"local extractor failed; rerun with --use-proxy to try defuddle.md and r.jina.ai (URL will be sent to those services)\"" >&2
   exit 1
 fi
 
-# Tier 2: defuddle.md (third party; user opted in via --use-proxy).
+# Tier 2: DeepSeek Fetch API, only when the user has a DEEPSEEK_API_KEY
+# (third party, billed per request; user opted in via --use-proxy).
+if [ -n "${DEEPSEEK_API_KEY:-}" ]; then
+  if OUT=$(python3 "$SCRIPT_DIR/deepseek.py" fetch "$URL" 2>/dev/null) && _has_content "$OUT"; then
+    echo "[fetch] tier=deepseek status=ok" >&2
+    echo "$OUT"
+    exit 0
+  fi
+  echo "[fetch] tier=deepseek status=fail reason=\"empty, error, or paywall-like response\"" >&2
+fi
+
+# Tier 3: defuddle.md (third party; user opted in via --use-proxy).
 if OUT=$(_with_retry _curl "https://defuddle.md/$URL"); then
   echo "[fetch] tier=defuddle status=ok" >&2
   echo "$OUT"
@@ -94,7 +106,7 @@ if OUT=$(_with_retry _curl "https://defuddle.md/$URL"); then
 fi
 echo "[fetch] tier=defuddle status=fail reason=\"empty or paywall-like response\"" >&2
 
-# Tier 3: r.jina.ai (third party; user opted in via --use-proxy).
+# Tier 4: r.jina.ai (third party; user opted in via --use-proxy).
 if OUT=$(_with_retry _curl "https://r.jina.ai/$URL"); then
   echo "[fetch] tier=jina status=ok" >&2
   echo "$OUT"
@@ -102,5 +114,5 @@ if OUT=$(_with_retry _curl "https://r.jina.ai/$URL"); then
 fi
 echo "[fetch] tier=jina status=fail reason=\"empty or paywall-like response\"" >&2
 
-echo "[fetch] status=fail reason=\"all tiers (local, defuddle, jina) failed for $URL\"" >&2
+echo "[fetch] status=fail reason=\"every tier failed for $URL\"" >&2
 exit 1
