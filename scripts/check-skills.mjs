@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 // Validate local skill structure and skills/README.md links.
 
-import { existsSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import process from "node:process";
 import path from "node:path";
-import { pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import {
   REPO_ROOT,
   SKILLS_DIR,
@@ -137,7 +137,9 @@ async function main() {
   if (!result.ok) process.exit(1);
 }
 
-if (process.argv[1] && import.meta.url === pathToFileURL(path.resolve(process.argv[1])).href) {
+// 入口路径可能包含目录链接；不存在的 argv（例如 stdin 的 -）不能触发 CLI。
+if (process.argv[1] && existsSync(process.argv[1]) &&
+    realpathSync.native(fileURLToPath(import.meta.url)) === realpathSync.native(process.argv[1])) {
   main().catch((err) => {
     console.error(`check-skills: ${err.message}`);
     process.exitCode = 1;

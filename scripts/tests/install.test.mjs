@@ -559,3 +559,25 @@ test('changed destination parents cannot redirect commit or cleanup into unrelat
   assert.equal(fs.readFileSync(path.join(moved, 'target'), 'utf8'), 'old');
   assert.equal(fs.existsSync(path.join(outside, 'target')), false);
 });
+
+for (const runner of runners) {
+  test(`${runner}: directory aliases execute CLI commands instead of silently succeeding`, (t) => {
+    const f = fixture(t), alias = path.join(f.base, 'repo-alias');
+    fs.symlinkSync(f.root, alias, process.platform === 'win32' ? 'junction' : 'dir');
+    const aliased = { ...f, root: alias };
+    const installed = run(aliased, runner, 'install', ['--json']);
+    succeeds(installed);
+    assert.notEqual(installed.stdout.trim(), '', 'CLI returned success without executing main through a directory alias');
+    assert.equal(JSON.parse(installed.stdout).ok, true);
+    assert.equal(fs.readFileSync(path.join(f.env.AGENTS_HOME, 'rules', 'rule.md'), 'utf8'), 'v1');
+    assert.equal(fs.readFileSync(path.join(f.env.CLAUDE_HOME, 'skills', 'example', 'SKILL.md'), 'utf8'), 'example v1');
+    const checked = run(aliased, runner, 'check', ['--json']);
+    succeeds(checked);
+    assert.equal(JSON.parse(checked.stdout).ok, true);
+    fs.writeFileSync(path.join(f.env.AGENTS_HOME, 'rules', 'rule.md'), 'external edit');
+    const conflict = run(aliased, runner, 'install', ['--dry-run', '--json']);
+    assert.equal(conflict.status, 1, conflict.stdout);
+    assert.equal(JSON.parse(conflict.stdout).ok, false);
+    assert.equal(fs.readFileSync(path.join(f.env.AGENTS_HOME, 'rules', 'rule.md'), 'utf8'), 'external edit');
+  });
+}
