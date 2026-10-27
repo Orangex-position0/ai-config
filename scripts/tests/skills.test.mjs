@@ -1,7 +1,14 @@
 import assert from 'node:assert/strict';
 import { test } from 'node:test';
-import { parseFrontmatter, parseYamlMapping } from '../lib/skills.mjs';
+import fs from 'node:fs';
+import { listSkillDirs, parseFrontmatter, parseYamlMapping } from '../lib/skills.mjs';
 import { validateFrontmatter } from '../check-skills.mjs';
+
+test('skill entrypoints use the exact portable SKILL.md filename', async () => {
+  for (const skill of await listSkillDirs()) {
+    assert.ok(fs.readdirSync(skill.dir).includes('SKILL.md'), `${skill.name}: expected exact filename SKILL.md`);
+  }
+});
 
 for (const description of ['[unterminated', '"unterminated', 'value: invalid']) {
   test(`frontmatter rejects malformed YAML: ${description}`, () => {
