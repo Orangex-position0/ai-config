@@ -9,15 +9,18 @@ on:
       - "scripts/**"
       - "skills/**"
       - "templates/**"
+      - "assets/**"
+      - "references/**"
       - "AGENTS.md"
       - "CLAUDE.md"
       - "README.md"
       - "README.zh-CN.md"
       - "skills-lock.json"
       - "package.json"
+      - "package-lock.json"
       - ".github/workflows/validate.yml"
   push:
-    branches: ["main"]
+    branches: ["main", "master"]
     paths:
       - "agents/**"
       - "commands/**"
@@ -25,12 +28,15 @@ on:
       - "scripts/**"
       - "skills/**"
       - "templates/**"
+      - "assets/**"
+      - "references/**"
       - "AGENTS.md"
       - "CLAUDE.md"
       - "README.md"
       - "README.zh-CN.md"
       - "skills-lock.json"
       - "package.json"
+      - "package-lock.json"
       - ".github/workflows/validate.yml"
   workflow_dispatch: {}
 
@@ -39,16 +45,46 @@ permissions:
 
 jobs:
   validate:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            runners: node,bash
+          - os: macos-latest
+            runners: node,bash
+          - os: windows-latest
+            runners: node,pwsh,powershell
+    runs-on: ${{ matrix.os }}
+    env:
+      TEST_RUNNERS: ${{ matrix.runners }}
+      TEST_BASH: /bin/bash
     steps:
       - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v4
         with:
           node-version: "20"
+          cache: npm
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - run: npm ci
 
       - name: Validate skills and source ledger
         run: npm run validate
 
+      - name: Exercise install and check in temporary homes
+        run: npm test
+
+      - name: Verify legacy validator entrypoint
+        run: python scripts/validate_skills.py
+
       - name: Check shell script syntax
-        run: bash -n scripts/*.sh
+        shell: bash
+        run: |
+          for script in scripts/*.sh; do
+            bash -n "$script" || exit
+          done
