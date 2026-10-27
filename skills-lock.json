@@ -3,6 +3,13 @@
   "skills": {
     "gpui-kit-design-guides": {"source": "longbridge/gpui-kit", "sourceType": "github", "skillPath": "skills/gpui-kit-design-guides/SKILL.md", "computedHash": "19854dca8933228f3285a9f565585aad5ebb39ffe63b68e48b2cf8b33b48c69a"},
     "gpui-kit": {"source": "longbridge/gpui-kit", "sourceType": "github", "skillPath": "skills/gpui-kit/SKILL.md", "computedHash": "ed4ff2a48ca0abcda07d460cd0d1fb67dcc3caf209c3253e35e49ddf8ae95e01"},
+    "ask-poszero": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/ask-poszero/SKILL.md", "computedHash": "9dba819c9fe35f92d8ea2ad872e430f5df9a8b77d0f23cd21d52be1594ae820b" },
+    "poszero-init": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-init/SKILL.md", "computedHash": "8c1ab28caf8757a6910ec48e52927df10c6242d95d523d95c75fe17906e4638a" },
+    "poszero-specify": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-specify/SKILL.md", "computedHash": "9095f1919a40839163bba16bf0245e273c406a2adbc4d534126c31d01b5721a6" },
+    "poszero-plan": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-plan/SKILL.md", "computedHash": "0a845dc61a05fe0ad4a252bf2b20dff8098fd1ddde2043aea8c2af1c78b29227" },
+    "poszero-tasks": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-tasks/SKILL.md", "computedHash": "3c07f09175dbeb72cbe0d882c39feaf1e29dfce475cd86596101ab0f3cbd5063" },
+    "poszero-implement": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-implement/SKILL.md", "computedHash": "4232db96320f85c7d5d89090c5848ca1cc8d1e2ce6016163105d507f9cbc14ff" },
+    "poszero-validate": { "source": "Orangex-position0/poszero", "sourceType": "github", "skillPath": "skills/poszero-validate/SKILL.md", "computedHash": "6cbff8bd5a0b4e68ab3e8804b6b58be551e38eb7d191747edc1c242c0d12aaeb" },
     "handdraw-style-prompter": {
       "source": "yang0/handraw-style",
       "sourceType": "github",

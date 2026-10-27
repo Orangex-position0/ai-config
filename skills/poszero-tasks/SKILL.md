@@ -1,6 +1,6 @@
 ---
 name: poszero-tasks
-description: "将已批准 Plan 拆解为 PosZero tasks.md。"
+description: "Break an approved plan into executable tasks."
 disable-model-invocation: true
 ---
 
@@ -10,23 +10,23 @@ Create or revise the executable task set for one feature.
 
 ## Contract
 
-- Preconditions: Approved Constitution, Spec, and Plan; inputs are not Stale.
-- Inputs: `REQ-*`, `SC-*`, `DEC-*`, Plan testing strategy, project execution constraints.
-- Branches: New Task Set, Revise Task Set, External Plan, Coverage Blocked.
+- Preconditions: Approved Constitution; a usable `change.md` or Approved Ready task, or Approved, non-Stale Spec and Plan.
+- Inputs: active contract or task scope, relevant `REQ-*`, `SC-*`, `DEC-*`, Plan testing strategy, execution constraints.
+- Branches: Task Set, Revise Task Set, Direct Handoff, External Plan, Coverage Blocked.
 - Allowed mutations: selected feature `tasks.md`.
-- Handoff: tasks document status, Ready set, dependency or coverage blockers, optional Implement path.
+- Handoff: tasks status, Execution Packet, Ready set, blockers, next skill.
 
 ## Steps
 
-1. Validate inputs and build or read the Imported Requirement Map with `references/common-protocol.md`.
-   Complete when all requirements use stable local IDs and sources are locatable.
+1. Read the active contract and validate inputs with `references/protocol/core-protocol.md` and `references/protocol/tasks-protocol.md`. Read `references/protocol/review-protocol.md` when preparing step 5 review. For `change.md` or an Approved Ready task, return its execution scope without creating `tasks.md`.
+   Complete when the direct scope is locatable, or all active requirements have stable IDs and sources.
 2. Split minimal vertical tasks by independently verifiable outcomes.
-   Complete when every task includes Outcome, Scope, and Verification, not just file or layer work.
+   Complete when every task includes Outcome, Scope, and Verification.
 3. Allocate `TASK-*`, Covers, and Depends On.
-   Complete when active `REQ-*`/`SC-*` are covered, the dependency graph has no cycle, and no required task is orphaned.
+   Complete when active `REQ-*` are covered, relevant `SC-*` are traced, the dependency graph has no cycle, and no required task is orphaned.
 4. Set new tasks to Pending and run the Tasks Ready Gate.
    Complete when every task boundary, dependency, and completion Evidence is checkable.
-5. Set `tasks.md` to In Review and ask for approval.
+5. Present execution scope, dependencies, and checks via Review Packet and Execution Packet; then set `tasks.md` to In Review and ask for approval.
    Complete when user approval makes the document Approved; otherwise no executable Ready task is produced.
 
 ## Ready

@@ -17,6 +17,7 @@ When creating or replacing a feature document, writing skills read the target pr
 
 | Skill | Output | Project Template |
 | --- | --- | --- |
+| `poszero-specify` | `change.md` | `.sdd/templates/change-template.md` |
 | `poszero-specify` | `spec.md` | `.sdd/templates/spec-template.md` |
 | `poszero-plan` | `plan.md` | `.sdd/templates/plan-template.md` |
 | `poszero-tasks` | `tasks.md` | `.sdd/templates/tasks-template.md` |
@@ -32,11 +33,12 @@ Documents use:
 
 ```text
 Constitution
-  -> Spec: Draft -> In Review -> Approved
-  -> Plan: Draft -> In Review -> Approved
-  -> Tasks document: Draft -> In Review -> Approved
-  -> Task item: Pending -> In Progress -> Done / Blocked / Cancelled
-  -> Validation: Not Run -> Incomplete / Failed / Passed
+  -> bounded change: change.md -> Implement -> target Evidence check
+  -> design path: Spec -> Plan -> Tasks -> Implement -> independent Validation
+
+Spec / Plan / Tasks: Draft -> In Review -> Approved
+Task item: Pending -> In Progress -> Done / Blocked / Cancelled
+Validation: Not Run -> Incomplete / Failed / Passed
 ```
 
 Approval must name the document and revision, receive a direct user approval, and write Status, Revision, Approved By, Approved At, and Approval Note. A skill cannot approve its own output.

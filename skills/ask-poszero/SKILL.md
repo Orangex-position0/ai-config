@@ -1,38 +1,32 @@
 ---
 name: ask-poszero
-description: "诊断 PosZero 状态、解释流程并推荐下一步。"
+description: "Explain the PosZero workflow and recommend the next skill."
 disable-model-invocation: true
 ---
 
 # Ask PosZero
 
-Read the project state and recommend one next user-invoked PosZero skill. Do not invoke another skill.
+Explain the PosZero workflow or recommend the next user-invoked PosZero skill. Do not invoke another skill.
 
 ## Contract
 
 - Preconditions: none; `.sdd/` may be missing or incomplete.
-- Inputs: user path/slug, readable `.sdd/`, installed version and recommendation index if available.
-- Branches: No Project, One Feature, Multiple Features, Blocked, Stale, Complete.
+- Inputs: optional mode (`流程` / `状态`), user path/slug, readable `.sdd/`, installed version, and recommendation index if available.
+- Branches: Overview, No Project, One Feature, Multiple Features, Blocked, Stale, Complete.
 - Allowed mutations: none.
-- Handoff: selected scope, derived status, evidence, blockers, one primary next step, optional recommendations.
+- Handoff: workflow overview, or selected scope, derived status, evidence, blockers, one primary next step, and up to two alternatives.
 
 ## Steps
 
-1. Resolve project root and scan candidate features using `references/common-protocol.md`.
+1. Resolve the mode from the user's input.
+   Complete when the user selected `流程` or `状态`; if no useful input is provided, explain both modes and ask the user to choose.
+2. For `流程`, explain the Skill collection and recommended order without scanning `.sdd/`.
+   Complete when the user sees the full `ask → init → specify → plan → tasks → implement → validate` path, the bounded-change or direct-task entry to Implement, and the risk conditions that require the full path.
+3. For `状态`, resolve the project root and scan candidate features using `references/protocol/core-protocol.md` and `references/protocol/status-protocol.md`.
    Complete when the target is unique; if multiple candidates exist, ask the user to choose.
-2. Check Constitution, template compatibility, and document consistency.
+4. For `状态`, check Constitution, template compatibility, and document consistency.
    Complete when missing files, conflicts, Stale inputs, and version issues have file evidence.
-3. Derive current status with the most conservative matching state.
-   Complete when every conclusion traces to document facts.
-4. Give one primary Handoff and read recommendation index only when useful.
-   Complete when the next step is clear, non-blocking recommendations are no more than two, and no file changed.
-
-## Decision Order
-
-1. Missing `.sdd/` or Constitution: recommend `poszero-init`.
-2. Missing or unapproved Spec: recommend `poszero-specify`.
-3. Missing or unapproved Plan: recommend `poszero-plan`.
-4. Missing or unapproved Tasks: recommend `poszero-tasks`.
-5. Ready task exists: recommend `poszero-implement`.
-6. All tasks done and validation missing, stale, failed, or incomplete: recommend `poszero-validate`.
-7. Passed validation: report Complete.
+5. For `状态`, derive current status and Stale scope using `references/protocol/status-protocol.md`.
+   Complete when every conclusion traces to document facts and uncertain impact is marked stale rather than guessed.
+6. Give one primary Handoff and up to two alternatives.
+   Complete when the next step is clear and no file changed.

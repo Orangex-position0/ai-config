@@ -43,7 +43,7 @@ Use these prompts only when relevant:
 
 - What domain boundaries matter?
 - What data flows across boundaries?
-- What external interfaces or contracts are affected?
+- Which approved Spec API contracts are affected, and which modules implement them? Reference the contract rather than restating it.
 - Who owns storage or durable state?
 - What runtime/deployment boundaries constrain the design?
 - What cross-module dependencies are allowed or forbidden?
@@ -62,12 +62,14 @@ Allowed:
 
 Do not include full function bodies, step-by-step pseudocode, incidental helper names, or speculative abstractions.
 
-Use these prompts only when relevant:
+Discuss in dependency order when relevant; reuse settled answers rather than repeating questions:
 
-- What modules are needed?
-- What key data models and functions does each module own?
-- Which inputs, outputs, and signatures constrain collaboration?
-- How do modules call or coordinate with each other?
+1. Which modules are needed, and what does each own?
+2. Which key data models and functions belong to each module?
+3. Which inputs, outputs, and signatures constrain collaboration? Skip incidental functions.
+4. How do modules call or coordinate with each other?
+
+Record only decisions needed to guide implementation; this is not a script requiring a separate question for each step.
 
 ## Project Structure
 
@@ -103,5 +105,14 @@ A vertical slice is an independently implementable, integrable, and verifiable e
 ## Developer Orientation
 
 ## Open Questions
+
+## Plan Handoff
+
+- Batch / Slice Boundaries:
+- Key Modules and Interfaces:
+- Data Flow:
+- Testing Seams:
+- Decisions:
+- Open Risks:
 
 ## Approval
