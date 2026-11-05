@@ -152,7 +152,12 @@ Start with a single crate unless a real boundary already exists.
 - Use `pub` only for the crate's public API.
 - Re-export the public API from `lib.rs` when it improves caller ergonomics.
 
-## 11. Related Documents
+## 11. Source Readability
+
+- 在普通字符串和字符字面量中，有意使用的零宽字符、双向控制字符等不可见 Unicode 字符使用 `\u{...}` 显式表示，例如 `"\u{200d}"`。
+- 需要保留原始字节的测试 fixture 或 raw string 可以保留这些字符，但须在相邻注释中说明原因；普通可见 Unicode 字符无需转义。
+
+## 12. Related Documents
 
 - [rust-error-handling.md](./rust-error-handling.md)
 - [rust-workflow-standards.md](./rust-workflow-standards.md)

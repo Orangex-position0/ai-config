@@ -92,6 +92,8 @@ Copy `../assets/templates/rust-toolchain.toml` for new Rust projects unless the 
 
 Copy `../assets/templates/rustfmt.toml` only when there is no existing rustfmt config. Use the crate's existing edition. For new projects without an edition, use 2024.
 
+Keep default rustfmt configuration compatible with stable Rust. Enable unstable options such as `format_macro_matchers = true` only when the project has explicitly opted into nightly; never switch toolchains automatically for formatting preferences. `max_width` is a formatting target, not a hard limit on every line.
+
 ## Cargo.toml Defaults
 
 Declare MSRV only for publishable crates that explicitly support it:
